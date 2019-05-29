@@ -16,17 +16,18 @@ class LogBookAuthController extends Controller {
      *
      * @return \Illuminate\Http\Response
      */
-    public function viewLogBook() {
+    public function viewLogBook(Request $request) {
         $today = date('Y-m-d');
         $data = logbookHeader::select('*')
                 ->with('logbookDetails')
                 ->get();
-//        $userData = User::select('*')
-//                ->with('user_permissions')
-//                ->get();
-//                , 'user_data' => $userData
-       // print_r($userData);exit;
-        return view('admin/logbook/logbook', ['data' => $data, 'today' => $today]);
+        $userData = User::select('*')
+                ->with('user_permissions')
+                ->get();
+        
+        $tasks_count = $request->get('tasks_count');
+       //print_r($userData);exit;
+        return view('admin/logbook/logbook', ['data' => $data, 'today' => $today, 'user_data' => $userData]);
     }
 
     /**

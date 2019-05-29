@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Models\Task;
 use Closure;
 use Sentinel;
+use App\Models\User;
 
 class SentinelAdmin
 {
@@ -24,7 +25,11 @@ class SentinelAdmin
 
         $tasks_count = Task::where('user_id', Sentinel::getUser()->id)->count();
         $request->attributes->add(['tasks_count' => $tasks_count]);
-
+        
+        $userPermissions = User::select('*')
+                ->with('user_permissions')
+                ->get();
+        $request->attributes->add(['userPermissions' => $userPermissions]);
         return $next($request);
     }
 }

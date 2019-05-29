@@ -81,7 +81,7 @@ $(document).on('click', '.nav-link', function () {
 
 {{-- Page content --}}
 @section('content')
-  <div class="card">
+<div class="card">
     <div class="card-header bg-primary text-white" style="font-size:16px;letter-spacing: 1px;font-family: roboto">
         <span>
             <!--<i class="livicon" data-name="printer" data-size="16" data-loop="true" data-c="#fff" data-hc="white"></i>-->
@@ -104,24 +104,28 @@ $(document).on('click', '.nav-link', function () {
                     <span class="ml-3" style="font-size:12px">
                         {{ $headers->logbookdate }}
                     </span>  
-                    
-                    </li>
-                    @endforeach
-                
+
+                </li>
+                @endforeach
+              
                 <li class=" nav-item  ml-auto">
                     <a href="{{ route("admin.view-logbok") }}" class="nav-link btn btn-primary rounded btn-xs py-1 px-2 onHover">Admin View</a>
-                </li>              
+                </li>     
+                 <!-- @if( !empty($user_data->user_permissions))
+                @if($user_data->user_permissions->edit === 0)-->
+              <!--  @endif
+                @endif-->
             </ul>
             <div id="myTabContent" class="tab-content">   
                 @foreach ($data as $headers)
                 <div @if( $headers->logbookdate == $today ) class="tab-pane fade show active in" @else class="tab-pane fade" @endif  id="id{{ $headers->logbookheaderid }}">
-                        @if( !empty($headers->logbookDetails ))
-                            @foreach ($headers->logbookDetails as $details)
-                                <p>
-                                  {{ $details->notes }}
-                                </p>
-                          @endforeach
-                      @endif
+                      @if( !empty($headers->logbookDetails ))
+                      @foreach ($headers->logbookDetails as $details)
+                      <p>
+                        {{ $details->notes }}
+                    </p>
+                    @endforeach
+                    @endif
                 </div> 
                 @endforeach
             </div>
