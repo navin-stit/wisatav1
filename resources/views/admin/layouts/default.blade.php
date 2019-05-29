@@ -23,6 +23,8 @@
         <link href="{{ asset('css/app.css') }}" rel="stylesheet" type="text/css"/>
         <!-- font Awesome -->
 
+        <script src="{{ asset('js/jquery.min.js') }}" type="text/javascript"></script>
+
         <!-- end of global css -->
         <!--page level css-->
         @yield('header_styles')

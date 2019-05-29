@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\User;
+use App\Models\UserPermissions;
+use App\Models\Taggable;
 use App\Models\logbook\logbookDetails;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -14,6 +17,7 @@ class AdminViewController extends Controller {
      * @return \Illuminate\Http\Response
      */
     /*  Logbook Start  */
+   
     public function viewLogBook() {
         return view('admin/adminView/logbook/viewNewLogBook');
     }

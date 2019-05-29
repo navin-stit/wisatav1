@@ -22,7 +22,7 @@ class UserPermissions extends Model {
      *
      * @var array
      */
-    use Taggable;
+   // use Taggable;
 
     protected $fillable = [
         

@@ -2,19 +2,31 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\User;
+use App\Models\UserPermissions;
+use App\Models\logbook\logbookHeader;
+use App\Models\logbook\logbookDetails;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-class LogBookAuthController extends Controller
-{
+class LogBookAuthController extends Controller {
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function viewLogBook()
-    {
-        return view('admin/logbook/logbook');
+    public function viewLogBook() {
+        $today = date('Y-m-d');
+        $data = logbookHeader::select('*')
+                ->with('logbookDetails')
+                ->get();
+//        $userData = User::select('*')
+//                ->with('user_permissions')
+//                ->get();
+//                , 'user_data' => $userData
+       // print_r($userData);exit;
+        return view('admin/logbook/logbook', ['data' => $data, 'today' => $today]);
     }
 
     /**
@@ -22,8 +34,7 @@ class LogBookAuthController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
-    {
+    public function create() {
         //
     }
 
@@ -33,8 +44,7 @@ class LogBookAuthController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
+    public function store(Request $request) {
         //
     }
 
@@ -44,8 +54,7 @@ class LogBookAuthController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
-    {
+    public function show($id) {
         //
     }
 
@@ -55,8 +64,7 @@ class LogBookAuthController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
-    {
+    public function edit($id) {
         //
     }
 
@@ -67,8 +75,7 @@ class LogBookAuthController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
-    {
+    public function update(Request $request, $id) {
         //
     }
 
@@ -78,8 +85,8 @@ class LogBookAuthController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
-    {
+    public function destroy($id) {
         //
     }
+
 }
