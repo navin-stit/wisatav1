@@ -7,43 +7,6 @@ Accordion Tabs
 {{-- page level styles --}}
 @section('header_styles')
 <link rel="stylesheet" href="{{ asset('css/pages/tab.css') }}" />
-
-
-<!--<script type="text/javascript">
-$(document).on('click', '.nav-link', function () {
-    var str = $(this).attr('href');
-    var tabsId = str.replace('#', '');
-    //alert(tabsId);
-    var tabContentId = $('.card-body').find('#myTabContent').children('div').attr('id');    
-    var tabContentId = tabsId;
-   // alert(tabContentId);return false;
-    if ( tabsId == tabContentId )
-    {    
-        $('.card-body').find('#myTabContent').find("id = " + tabsId).parent('#myTabContent').children('div').addClass('active show');
-        //$('.card-body').find('#myTabContent').children('div').addClass('active show');
-    } else {
-        $('.card-body').find('#myTabContent').children('div').removeClass('active show');
-    }
-    //alert(tabContentId);
-    //$('.tab-pane').toggleClass('active');
-});
-
-</script>-->
-<!--<script type="text/javascript">
- function getCurrentDate() {
-     var weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-     var a = new Date();
-     console.log(weekday[a.getDay()]);
-     var today = weekday[a.getDay()];
-
-     var tabDay = $('.nav-tabs').children('li').children('a').html();
-     $(tabDay).each(function (key, val) {           
-            console.log(val);
-    
-     });
-     console.log(tabDay);
- }
-</script>-->
 <style>
     @media (min-width:320px) and (max-width:425px){
         .popover.left{
@@ -96,7 +59,7 @@ $(document).on('click', '.nav-link', function () {
     <div class="card-body">
         <div class="bs-example" id="mainBody">
             <ul class="nav nav-tabs" style="margin-bottom: 15px;">
-                @foreach ($data as $headers) 
+                @foreach ($lokbookHeaders as $headers) 
                 <li class="nav-item pb-2">
                     <a href="#id{{ $headers->logbookheaderid }}"  data-toggle="tab"  class="nav-link {{ ($headers->logbookdate==$today) ? 'active' : ''  }}" style="padding-bottom:0px!important">
                         {{ $headers->logbooktitle }}
@@ -104,20 +67,23 @@ $(document).on('click', '.nav-link', function () {
                     <span class="ml-3" style="font-size:12px">
                         {{ $headers->logbookdate }}
                     </span>  
-
                 </li>
-                @endforeach
-              
+                @endforeach               
+
+                @foreach (Session::get('userPermissionDetail') as $userPermissionDetail)
+<!--               {{ $userPermissionDetail }}           -->
+                @if( $userPermissionDetail->userid ===  Sentinel::getUser()->id ) 
+                @if( $userPermissionDetail->edit === 1 )
                 <li class=" nav-item  ml-auto">
                     <a href="{{ route("admin.view-logbok") }}" class="nav-link btn btn-primary rounded btn-xs py-1 px-2 onHover">Admin View</a>
-                </li>     
-                 <!-- @if( !empty($user_data->user_permissions))
-                @if($user_data->user_permissions->edit === 0)-->
-              <!--  @endif
-                @endif-->
+                </li>                   
+                @endif
+                @endif
+                @endforeach 
+
             </ul>
             <div id="myTabContent" class="tab-content">   
-                @foreach ($data as $headers)
+                @foreach ($lokbookHeaders as $headers)
                 <div @if( $headers->logbookdate == $today ) class="tab-pane fade show active in" @else class="tab-pane fade" @endif  id="id{{ $headers->logbookheaderid }}">
                       @if( !empty($headers->logbookDetails ))
                       @foreach ($headers->logbookDetails as $details)

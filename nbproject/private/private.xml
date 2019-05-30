@@ -3,13 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/xampp/htdocs/starter/app/Models/UserPermissions.php</file>
+            <file>file:/C:/xampp/htdocs/starter/resources/views/admin/adminView/logbook/viewNewLogBook.blade.php</file>
             <file>file:/C:/xampp/htdocs/starter/resources/views/admin/logbook/logbook.blade.php</file>
-            <file>file:/C:/xampp/htdocs/starter/resources/views/admin/login.blade.php</file>
             <file>file:/C:/xampp/htdocs/starter/app/Http/Controllers/Admin/LogBookAuthController.php</file>
-            <file>file:/C:/xampp/htdocs/starter/app/Models/logbook/logbookHeader.php</file>
             <file>file:/C:/xampp/htdocs/starter/app/Http/Controllers/Admin/AuthController.php</file>
-            <file>file:/C:/xampp/htdocs/starter/routes/web.php</file>
+            <file>file:/C:/xampp/htdocs/starter/resources/views/admin/adminView/logbook/addNewLogBook.blade.php</file>
         </group>
     </open-files>
 </project-private>

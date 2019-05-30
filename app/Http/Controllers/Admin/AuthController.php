@@ -1,5 +1,7 @@
-<?php namespace App\Http\Controllers\Admin;
+<?php
 
+namespace App\Http\Controllers\Admin;
+use Session;
 use App\Http\Controllers\JoshController;
 use App\Http\Requests\ConfirmPasswordRequest;
 use App\Mail\Register;
@@ -19,20 +21,18 @@ use App\Http\Requests\UserRequest;
 use App\Http\Requests\ForgotRequest;
 use stdClass;
 use App\Mail\ForgotPassword;
+use App\Models\UserPermissions;
 
+class AuthController extends JoshController {
 
-class AuthController extends JoshController
-{
     /**
      * Account sign in.
      *
      * @return View
      */
-
     private $user_activation = false;
 
-    public function getSignin()
-    {
+    public function getSignin() {
         // Is the user logged in?
         if (Sentinel::check()) {
             return Redirect::route('admin.dashboard');
@@ -47,8 +47,7 @@ class AuthController extends JoshController
      * @param Request $request
      * @return Redirect
      */
-    public function postSignin(Request $request)
-    {
+    public function postSignin(Request $request) {
 
         try {
             // Try to log the user in
@@ -56,15 +55,16 @@ class AuthController extends JoshController
                 // Redirect to the dashboard page
                 //Activity log
                 activity($user->full_name)
-                    ->performedOn($user)
-                    ->causedBy($user)
-                    ->log('LoggedIn');
+                        ->performedOn($user)
+                        ->causedBy($user)
+                        ->log('LoggedIn');
+                $userPermissionDetails = UserPermissions::select('*')->first();
+                Session::push('userPermissionDetail', $userPermissionDetails);
                 //activity log ends
                 return Redirect::route("admin.dashboard")->with('success', trans('auth/message.signin.success'));
             }
 
             $this->messageBag->add('email', trans('auth/message.account_not_found'));
-
         } catch (NotActivatedException $e) {
             $this->messageBag->add('email', trans('auth/message.account_not_activated'));
         } catch (ThrottlingException $e) {
@@ -81,18 +81,17 @@ class AuthController extends JoshController
      *
      * @return Redirect
      */
-    public function postSignup(UserRequest $request)
-    {
+    public function postSignup(UserRequest $request) {
         $activate = $this->user_activation;
 
         try {
             // Register the user
             $user = Sentinel::register([
-                'first_name' => $request->get('first_name'),
-                'last_name' => $request->get('last_name'),
-                'email' => $request->get('email'),
-                'password' => $request->get('password'),
-            ],$activate);
+                        'first_name' => $request->get('first_name'),
+                        'last_name' => $request->get('last_name'),
+                        'email' => $request->get('email'),
+                        'password' => $request->get('password'),
+                            ], $activate);
             // login user automatically
             $role = Sentinel::findRoleById(2);
             //add user to 'User' group
@@ -101,13 +100,13 @@ class AuthController extends JoshController
             if (!$activate) {
                 // Data to be used on the email view
 
-                $data=[
-                    'user_name' => $user->first_name .' '. $user->last_name,
+                $data = [
+                    'user_name' => $user->first_name . ' ' . $user->last_name,
                     'activationUrl' => URL::route('activate', [$user->id, Activation::create($user)->code]),
                 ];
                 // Send the activation code through email
                 Mail::to($user->email)
-                    ->send(new Register($data));
+                        ->send(new Register($data));
 
                 //Redirect to login page
                 return redirect('admin.login')->with('success', trans('auth/message.signup.success'));
@@ -117,13 +116,12 @@ class AuthController extends JoshController
             //Activity log
 
             activity($user->full_name)
-                ->performedOn($user)
-                ->causedBy($user)
-                ->log('Registered');
+                    ->performedOn($user)
+                    ->causedBy($user)
+                    ->log('Registered');
             //activity log ends
             // Redirect to the home page with success menu
             return Redirect::route("admin.dashboard")->with('success', trans('auth/message.signup.success'));
-
         } catch (UserExistsException $e) {
             $this->messageBag->add('email', trans('auth/message.account_already_exists'));
         }
@@ -139,8 +137,7 @@ class AuthController extends JoshController
      * @param string $activationCode
      * @return
      */
-    public function getActivate($userId,$activationCode = null)
-    {
+    public function getActivate($userId, $activationCode = null) {
         // Is user logged in?
         if (Sentinel::check()) {
             return Redirect::route('admin.dashboard');
@@ -158,7 +155,6 @@ class AuthController extends JoshController
             $error = trans('auth/message.activate.error');
             return Redirect::route('signin')->with('error', $error);
         }
-
     }
 
     /**
@@ -167,8 +163,7 @@ class AuthController extends JoshController
      *
      * @return Redirect
      */
-    public function postForgotPassword(ForgotRequest $request)
-    {
+    public function postForgotPassword(ForgotRequest $request) {
         $data = new stdClass();
 
         try {
@@ -179,20 +174,19 @@ class AuthController extends JoshController
                 return back()->with('error', trans('auth/message.account_email_not_found'));
             }
             $activation = Activation::completed($user);
-            if(!$activation){
+            if (!$activation) {
                 return back()->with('error', trans('auth/message.account_not_activated'));
             }
             $reminder = Reminder::exists($user) ?: Reminder::create($user);
             // Data to be used on the email view
 
-            $data->user_name = $user->first_name .' ' .$user->last_name;
+            $data->user_name = $user->first_name . ' ' . $user->last_name;
             $data->forgotPasswordUrl = URL::route('forgot-password-confirm', [$user->id, $reminder->code]);
 
             // Send the activation code through email
 
             Mail::to($user->email)
-                ->send(new ForgotPassword($data));
-
+                    ->send(new ForgotPassword($data));
         } catch (UserNotFoundException $e) {
             // Even though the email was not found, we will pretend
             // we have sent the password reset code through email,
@@ -210,17 +204,16 @@ class AuthController extends JoshController
      * @param  string $passwordResetCode
      * @return View
      */
-    public function getForgotPasswordConfirm($userId,$passwordResetCode = null)
-    {
+    public function getForgotPasswordConfirm($userId, $passwordResetCode = null) {
         // Find the user using the password reset code
-        if(!$user = Sentinel::findById($userId)) {
+        if (!$user = Sentinel::findById($userId)) {
             // Redirect to the forgot password page
             return Redirect::route('forgot-password')->with('error', trans('auth/message.account_not_found'));
         }
-        if($reminder = Reminder::exists($user)) {
-            if($passwordResetCode == $reminder->code) {
+        if ($reminder = Reminder::exists($user)) {
+            if ($passwordResetCode == $reminder->code) {
                 return view('admin.auth.forgot-password-confirm');
-            } else{
+            } else {
                 return 'code does not match';
             }
         } else {
@@ -239,8 +232,7 @@ class AuthController extends JoshController
      * @param  string   $passwordResetCode
      * @return Redirect
      */
-    public function postForgotPasswordConfirm(ConfirmPasswordRequest $request, $userId, $passwordResetCode = null)
-    {
+    public function postForgotPasswordConfirm(ConfirmPasswordRequest $request, $userId, $passwordResetCode = null) {
 
         // Find the user using the password reset code
         $user = Sentinel::findById($userId);
@@ -258,18 +250,18 @@ class AuthController extends JoshController
      *
      * @return Redirect
      */
-    public function getLogout()
-    {
+    public function getLogout(Request $request) {
 
         if (Sentinel::check()) {
             //Activity log
             $user = Sentinel::getuser();
             activity($user->full_name)
-                ->performedOn($user)
-                ->causedBy($user)
-                ->log('LoggedOut');
+                    ->performedOn($user)
+                    ->causedBy($user)
+                    ->log('LoggedOut');
             // Log the user out
             Sentinel::logout();
+            $request->session()->flush();
         }
 
 
@@ -284,16 +276,15 @@ class AuthController extends JoshController
      *
      * @return Redirect
      */
-    public function postRegister2(UserRequest $request)
-    {
+    public function postRegister2(UserRequest $request) {
 
         try {
             // Register the user
             $user = Sentinel::registerAndActivate(array(
-                'first_name' => $request->get('first_name'),
-                'last_name' => $request->get('last_name'),
-                'email' => $request->get('email'),
-                'password' => $request->get('password'),
+                        'first_name' => $request->get('first_name'),
+                        'last_name' => $request->get('last_name'),
+                        'email' => $request->get('email'),
+                        'password' => $request->get('password'),
             ));
 
             //add user to 'User' group
@@ -305,7 +296,6 @@ class AuthController extends JoshController
 
             // Redirect to the home page with success menu
             return Redirect::route("admin.dashboard")->with('success', trans('auth/message.signup.success'));
-
         } catch (UserExistsException $e) {
             $this->messageBag->add('email', trans('auth/message.account_already_exists'));
         }

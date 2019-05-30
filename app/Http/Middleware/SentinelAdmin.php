@@ -26,10 +26,10 @@ class SentinelAdmin
         $tasks_count = Task::where('user_id', Sentinel::getUser()->id)->count();
         $request->attributes->add(['tasks_count' => $tasks_count]);
         
-        $userPermissions = User::select('*')
-                ->with('user_permissions')
-                ->get();
-        $request->attributes->add(['userPermissions' => $userPermissions]);
+//        $userPermissions = User::select('*')
+//                ->with('user_permissions')
+//                ->first();
+//        $request->attributes->add(['userPermissions' => $userPermissions]);
         return $next($request);
     }
 }

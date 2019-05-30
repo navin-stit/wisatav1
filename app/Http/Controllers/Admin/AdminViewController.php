@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\User;
 use App\Models\UserPermissions;
 use App\Models\Taggable;
+use App\Models\logbook\logbookHeader;
 use App\Models\logbook\logbookDetails;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -17,22 +18,30 @@ class AdminViewController extends Controller {
      * @return \Illuminate\Http\Response
      */
     /*  Logbook Start  */
-   
+
     public function viewLogBook() {
-        return view('admin/adminView/logbook/viewNewLogBook');
+        $today = date('Y-m-d');
+        $lookbookHeaders = logbookHeader::select('*')
+                ->with('logbookDetails')
+                ->get();
+        return view('admin/adminView/logbook/viewNewLogBook', ['lokbookHeaders' => $lookbookHeaders, 'today' => $today]);
     }
 
     public function addNewLogBook(Request $request) {
         if ($request->isMethod('get')) {
             return view('admin/adminView/logbook/addNewLogBook');
         }
-        if($request->isMethod('post')){
+        if(isset($_POST['addLogbook'])){
+        if ($request->isMethod('post')) {
             $posts = $request->post();
-           print_r('<pre>'.$posts);exit;
+            print_r('<pre>' . $posts);
+            exit;
 //            $data = new logbookDetails();
 //            $data->notes = $posts['notes']; 
         }
+        }
     }
+
     /*  Logbook End  */
 
     public function addManagerTask() {

@@ -1,14 +1,13 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-
 use App\Models\User;
 use App\Models\UserPermissions;
 use App\Models\logbook\logbookHeader;
 use App\Models\logbook\logbookDetails;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
+use Illuminate\Support\Facades\Auth;
 class LogBookAuthController extends Controller {
 
     /**
@@ -18,16 +17,10 @@ class LogBookAuthController extends Controller {
      */
     public function viewLogBook(Request $request) {
         $today = date('Y-m-d');
-        $data = logbookHeader::select('*')
+        $lookbookHeaders = logbookHeader::select('*')
                 ->with('logbookDetails')
-                ->get();
-        $userData = User::select('*')
-                ->with('user_permissions')
-                ->get();
-        
-        $tasks_count = $request->get('tasks_count');
-       //print_r($userData);exit;
-        return view('admin/logbook/logbook', ['data' => $data, 'today' => $today, 'user_data' => $userData]);
+                ->get();      
+        return view('admin/logbook/logbook', ['lokbookHeaders' => $lookbookHeaders, 'today' => $today]);
     }
 
     /**

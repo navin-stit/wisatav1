@@ -76,6 +76,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin', 'as' => 'admin.'], f
     Route::get('log_viewers/logs/{date}/{level}/search', '\Arcanedev\LogViewer\Http\Controllers\LogViewerController@search')->name('log_viewers.logs.search');
     Route::get('log_viewers/logcheck', '\Arcanedev\LogViewer\Http\Controllers\LogViewerController@logCheck')->name('log-viewers.logcheck');
     //end Log viewer
+    
     # LogBook routes 
     Route::get('logbook', 'Admin\LogBookAuthController@viewLogBook')->name('logbook');
 
@@ -89,15 +90,14 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin', 'as' => 'admin.'], f
     #logbook routes
     Route::get('view-logbok', 'Admin\AdminViewController@viewLogBook')->name('view-logbok');
     //Route::get('add-logbook', 'Admin\AdminViewController@addNewLogBook')->name('add-logbook');
-   Route::match(['get', 'post'],'add-logbook','Admin\AdminViewController@addNewLogBook')->name('add-logbook');
+    Route::match(['get','post'],'add-logbook','Admin\AdminViewController@addNewLogBook')->name('add-logbook');
     #manager routes
-    Route::get('add-task', 'Admin\AdminViewController@addManagerTask')->name('add-task');
+    Route::get('add-task','Admin\AdminViewController@addManagerTask')->name('add-task');
     #frontdesk routes
-    Route::get('add-front-desk-task', 'Admin\AdminViewController@addFrontDeskDailyTask')->name('add-front-desk-task');
+    Route::get('add-front-desk-task','Admin\AdminViewController@addFrontDeskDailyTask')->name('add-front-desk-task');
     #module routes
     Route::get('add-module', 'Admin\ModulesController@addModule')->name('add-module');
-
-     #End AdminView routes
+    #End AdminView routes
     
     # Activity log
     Route::get('activity_log/data', 'JoshController@activityLogData')->name('activity_log.data');
