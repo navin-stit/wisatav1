@@ -5,9 +5,10 @@
         <group>
             <file>file:/C:/xampp/htdocs/starter/resources/views/admin/adminView/logbook/viewNewLogBook.blade.php</file>
             <file>file:/C:/xampp/htdocs/starter/resources/views/admin/logbook/logbook.blade.php</file>
-            <file>file:/C:/xampp/htdocs/starter/app/Http/Controllers/Admin/LogBookAuthController.php</file>
             <file>file:/C:/xampp/htdocs/starter/app/Http/Controllers/Admin/AuthController.php</file>
             <file>file:/C:/xampp/htdocs/starter/resources/views/admin/adminView/logbook/addNewLogBook.blade.php</file>
+            <file>file:/C:/xampp/htdocs/starter/app/Http/Controllers/Admin/AdminViewController.php</file>
+            <file>file:/C:/xampp/htdocs/starter/routes/web.php</file>
         </group>
     </open-files>
 </project-private>
