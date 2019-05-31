@@ -26,22 +26,35 @@ class AdminViewController extends Controller {
                 ->get();
         return view('admin/adminView/logbook/viewNewLogBook', ['lokbookHeaders' => $lookbookHeaders, 'today' => $today]);
     }
-
-    public function addNewLogBook(Request $request) {
-        if ($request->isMethod('get')) {
-            return view('admin/adminView/logbook/addNewLogBook');
-        }
-        if(isset($_POST['addLogbook'])){
-        if ($request->isMethod('post')) {
+    
+    public function addLogbokView(Request $request) 
+    { 
+        return view('admin/adminView/logbook/addNewLogBook');        
+    }  
+     
+   public function addNewLogBook(Request $request) {     
+        if ($request->isMethod('post')) {          
             $posts = $request->post();
-            print_r('<pre>' . $posts);
-            exit;
-//            $data = new logbookDetails();
-//            $data->notes = $posts['notes']; 
+            $postData = new logbookDetails();
+            $postData->createdbyid = $posts['createdbyid'];
+            $postData->logbookheaderid = $posts['logbookheaderid'];            
+            $postData->notes = $posts['notes'];        
+            //print_r('<pre>' .$postData );exit;
+            $postData->save();
         }
+      return  redirect('admin/view-logbok');
+    }
+    
+     
+    public function postHeaderId(Request $request) 
+    {
+        if($request->isMethod('post'))
+        {
+            $posts = $request->post();
+           // print_r($posts['logbookheaderid']);exit;
         }
     }
-
+    
     /*  Logbook End  */
 
     public function addManagerTask() {

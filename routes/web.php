@@ -89,8 +89,10 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin', 'as' => 'admin.'], f
     #Start AdminView routes
     #logbook routes
     Route::get('view-logbok', 'Admin\AdminViewController@viewLogBook')->name('view-logbok');
-    //Route::get('add-logbook', 'Admin\AdminViewController@addNewLogBook')->name('add-logbook');
-    Route::match(['get','post'],'add-logbook','Admin\AdminViewController@addNewLogBook')->name('add-logbook');
+    Route::post('headerId', 'Admin\AdminViewController@postHeaderId')->name('headerId');
+    Route::get('add-logbook', 'Admin\AdminViewController@addLogbokView')->name('add-logbook');
+    Route::post('addLogbokToDb', 'Admin\AdminViewController@addNewLogBook')->name('addLogbokToDb');   
+   // Route::match(['get','post'],'add-logbook','Admin\AdminViewController@addNewLogBook')->name('add-logbook');
     #manager routes
     Route::get('add-task','Admin\AdminViewController@addManagerTask')->name('add-task');
     #frontdesk routes

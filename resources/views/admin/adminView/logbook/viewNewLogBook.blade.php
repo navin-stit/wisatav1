@@ -59,20 +59,27 @@ Accordion Tabs
             <i class="fa fa-chevron-up clickable ml-3"></i>
         </span>
     </div>
-    <div class="card-body">
-        <div class="bs-example">
-            <ul class="nav nav-tabs" style="margin-bottom: 15px;">  
-                @foreach ($lokbookHeaders as $headers)    
-                <li class="nav-item">
-                    <a href="#id{{ $headers->logbookheaderid }}" data-toggle="tab" class="nav-link {{ $headers->logbookdate == $today ? 'active' : '' }}">
-                        {{ $headers->logbooktitle  }}
-                    </a>
-                </li>
-                @endforeach  
+    <div class="card-body p-0">
+        <div class="bs-example">          
+            <ul class="nav nav-tabs" style="margin-bottom: 15px;"> 
+
+                    @foreach ($lokbookHeaders as $headers) 
+                <li class="nav-item pb-2" >
+                        <a href="#id{{ $headers->logbookheaderid }}"   data-toggle="tab"  class="logBookTab nav-link {{ ($headers->logbookdate==$today) ? 'active' : ''  }}" style="padding-bottom:0px!important">
+                            {{ $headers->logbooktitle }}
+                        </a>                 
+                        <span class="ml-3" style="font-size:12px">
+                            {{ $headers->logbookdate }}
+                        </span>  
+                    </li>
+                    <input type="hidden" name="logbookheaderid" value="{{ $headers->logbookheaderid }}">
+                    @endforeach 
+
                 <li class=" nav-item  ml-auto">
-                    <a href="{{ route('admin.add-logbook') }}" class="nav-link btn btn-primary rounded btn-xs py-1 px-2 onHover">Add Logbook</a>
+                    <a id="addLogBook" href="{{ route('admin.add-logbook') }}" class="nav-link btn btn-primary rounded btn-xs py-1 px-2 onHover " >Add Logbook</a>
                 </li>
-            </ul>
+
+            </ul>          
             <div id="myTabContent" class="tab-content" style="height:200px!important">  
                 @foreach ($lokbookHeaders as $headers)
                 <div class="tab-pane fade show {{ $headers->logbookdate == $today ? 'active in' : '' }}  mt-3 ml-3" id="id{{$headers->logbookheaderid }}">                   
@@ -122,20 +129,14 @@ Accordion Tabs
                         </div>
                     </div>
                 </div>             
-             @endforeach
+                @endforeach
             </div>   
             <div class="ml-3 d-flex" style="font-size:15px;letter-spacing: 1px;font-family: roboto">
-                <a href="#" class="underlineOnHover "> Select All
-                    <span class="ml-1">  | </span>
-                </a>
-                <a href="#" class="underlineOnHover ml-1"> Un-Select All </a>
+
                 <div class="mx-4">
                     <a href="#" class="btn btn-primary  rounded py-1 px-4 ">Save</a>
-                </div>
-                <!--                <div class="mr-4">
-                                    <a href="#" class="btn btn-success rounded py-1 px-4">Copy</a>
-                                </div>-->
-                <div class="mr-4 ml-auto">
+                </div>               
+                <div class="mr-4 mx-auto">
                     <a href="#" class="btn btn-danger rounded py-1 px-4 ">Cancel</a>
                 </div>                
             </div>
@@ -146,4 +147,12 @@ Accordion Tabs
 {{-- page level scripts --}}
 @section('footer_scripts')
 <script src="{{ asset('js/pages/tabs_accordions.js') }}" type="text/javascript"></script>
+<script>
+    $(".logBookTab").click(function(){
+        var logBookId = $(this).attr("href").replace('#id','');
+        var addLogBookUrl  = $("#addLogBook").attr("href").split('?');
+        $("#addLogBook").attr("href", addLogBookUrl[0]+"?id="+logBookId);
+    });
+
+</script>
 @stop

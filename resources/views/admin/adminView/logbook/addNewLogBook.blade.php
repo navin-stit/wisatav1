@@ -71,56 +71,70 @@ Tasks
                             <div class="clearfix"></div>
                         </div>
                     </div>
-                    <div class="add_list adds">
-                        <form method="post" action="{{ route('admin.add-logbook') }}" id="main_input_box">
-                            <div class="form-group">
-                                <label for="Logbook_description">
-                                    Logbook description :
-                                </label>
-                                <input type="text" name="notes" class="form-control" id="task-description" required="required">
+                    <div class="add_list adds p-0 pb-2 mb-4">
+                        <!--basic form starts-->                      
+                            <div class="card " id="hidepanel1">                               
+                                <div class="card-body">
+                                    <form class="form-horizontal" action="{{ route('admin.addLogbokToDb') }}" method="post">
+                                        <!-- CSRF Token -->
+                                        @csrf   
+                                     {{ Request::get('id') }}
+                                        <!-- Name input-->                                                                                     
+                                        <input id="name" name="createdbyid" type="hidden" value="{{ Sentinel::getUser()->id }}"  class="form-control"></div>
+                                        <input id="headerId" name="logbookheaderid" type="hidden" value="{{ Request::get('id') }}"  class="form-control"></div>
+                                         
+                                          <!-- Name input-->
+                                        <div class="form-group pl-4">
+                                            <div class="row">
+                                                <label class="col-md-3 col-lg-3 col-12 control-label" for="name">Notes</label>
+                                                <div class="col-md-9 col-lg-9 col-12">
+                                                    <input id="name" name="notes" type="text" placeholder="Add Notes" class="form-control"></div>
+                                            </div>
+                                        </div>                                       
+                                        <div class="form-position pl-4 pb-4">
+                                            <div class="row">
+                                                <div class="col-md-12  col-sm-12 col-12  col-lg-12 ">
+                                                    <button type="submit" class="btn btn-responsive btn-primary btn-md" style="letter-spacing:1px">Add</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                {!! Form::label('task_deadline', 'Deadline: ') !!}
-                                {!! Form::text('task_deadline', null, ['class' => 'form-control datepicker', 'id'=>'task_deadline', 'onkeydown'=>'return false', 'data-date-format'=> 'YYYY/MM/DD', 'required' => 'required','autocomplete'=>'off']) !!}
-                            </div>
-                            <button type="submit" name="addLogbook" class="btn btn-primary add_button">
-                                Add Task
-                            </button>
-                            <!--                       
-                        </form>
+                     
+                        <!--basic form 2 starts-->
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 </section>
-                            <!-- content -->
-                            <div class="modal fade" id="editConfirmModal" tabindex="-1" role="dialog">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h4 class="modal-title">Alert</h4>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <p>You are already editing a row, you must save or cancel that row before edit/delete a new row</p>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-light" data-dismiss="modal">Close</button>
-                                        </div>
-                                    </div><!-- /.modal-content -->
-                                </div><!-- /.modal-dialog -->
-                            </div>
-                            @stop
+<!-- content -->
+<div class="modal fade" id="editConfirmModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Alert</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <p>You are already editing a row, you must save or cancel that row before edit/delete a new row</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-dismiss="modal">Close</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+@stop
 
-                            {{-- page level scripts --}}
-                            @section('footer_scripts')
-                            <script type="text/javascript" src="{{ asset('vendors/moment/js/moment.min.js') }}"></script>
-                            <script type="text/javascript" src="{{ asset('vendors/bootstrap-datetime-picker/js/bootstrap-datetimepicker.min.js') }}"></script>
-                            <script type="text/javascript" src="{{ asset('js/pages/tasklist.js') }}"></script>
+{{-- page level scripts --}}
+@section('footer_scripts')
+<script type="text/javascript" src="{{ asset('vendors/moment/js/moment.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('vendors/bootstrap-datetime-picker/js/bootstrap-datetimepicker.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/pages/tasklist.js') }}"></script>
 
-                            <script>
+<script>
 var currentDate = new Date();
 $(".datepicker").datetimepicker({
     startDate: currentDate,
@@ -133,5 +147,5 @@ $(".datepicker").datetimepicker({
     minView: 2,
     forceParse: 0
 });
-                            </script>
-                            @stop
+</script>
+@stop
