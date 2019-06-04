@@ -77,10 +77,9 @@ Tasks
                                 <div class="card-body">
                                     <form class="form-horizontal" action="{{ route('admin.addLogbokToDb') }}" method="post">
                                         <!-- CSRF Token -->
-                                        @csrf   
-                                     {{ Request::get('id') }}
-                                        <!-- Name input-->                                                                                     
-                                        <input id="name" name="createdbyid" type="hidden" value="{{ Sentinel::getUser()->id }}"  class="form-control"></div>
+                                        @csrf                                        
+                                        <!-- Name input-->                                                                                     				<div>
+                                        <input id="name" name="createdbyid" type="hidden" value="{{ Sentinel::getUser()->id }}"  class="form-control">
                                         <input id="headerId" name="logbookheaderid" type="hidden" value="{{ Request::get('id') }}"  class="form-control"></div>
                                          
                                           <!-- Name input-->

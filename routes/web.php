@@ -89,6 +89,11 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin', 'as' => 'admin.'], f
     #Start AdminView routes
     #logbook routes
     Route::get('view-logbok', 'Admin\AdminViewController@viewLogBook')->name('view-logbok');
+    Route::post('updateLogBook', 'Admin\AdminViewController@updateLogBook');
+    Route::post('saveLogBook', 'Admin\AdminViewController@saveLogBook');
+    Route::post('deleteLogBookNotes', 'Admin\AdminViewController@deleteLogBookNotes');
+    
+    
     Route::post('headerId', 'Admin\AdminViewController@postHeaderId')->name('headerId');
     Route::get('add-logbook', 'Admin\AdminViewController@addLogbokView')->name('add-logbook');
     Route::post('addLogbokToDb', 'Admin\AdminViewController@addNewLogBook')->name('addLogbokToDb');   
