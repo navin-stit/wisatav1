@@ -96,6 +96,11 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin', 'as' => 'admin.'], f
     
     Route::post('headerId', 'Admin\AdminViewController@postHeaderId')->name('headerId');
     Route::get('add-logbook', 'Admin\AdminViewController@addLogbokView')->name('add-logbook');
+    
+    Route::post('updateManagerTask', 'Admin\AdminViewController@updateManagerTask');
+    Route::post('saveManagerTask', 'Admin\AdminViewController@saveManagerTask');
+    Route::post('deleteManagerTask', 'Admin\AdminViewController@deleteManagerTask');
+    
     Route::post('addLogbokToDb', 'Admin\AdminViewController@addNewLogBook')->name('addLogbokToDb');   
    // Route::match(['get','post'],'add-logbook','Admin\AdminViewController@addNewLogBook')->name('add-logbook');
     #manager routes

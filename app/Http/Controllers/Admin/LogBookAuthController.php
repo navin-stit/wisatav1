@@ -19,8 +19,14 @@ class LogBookAuthController extends Controller {
      */
     public function viewLogBook(Request $request) {
         $today = date('Y-m-d');
-        $lookbookHeaders = logbookHeader::select('*')->with('logbookDetails')->get(); 
-        $weekDays = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];      
+        $weekDates = array();
+        $weekDays = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']; 
+        foreach($weekDays as $days)
+		{
+		 	$day_value = date('Y-m-d', strtotime($days . ' this week'));
+		 	array_push($weekDates,$day_value); 	
+		}
+        $lookbookHeaders = DB::table('log_book_headers')->select('*')->whereIn('logbookdate',$weekDates)->get(); 
         if(sizeof($lookbookHeaders)<=0)
         {			 
         	 $not_exits = array();
@@ -54,7 +60,7 @@ class LogBookAuthController extends Controller {
 				}
 			}
 		}
-		$lookbookHeaders = logbookHeader::select('*')->with('logbookDetails')->get(); 
+		$lookbookHeaders = logbookHeader::select('*')->whereIn('logbookdate',$weekDates)->with('logbookDetails')->get(); 
 		return view('admin/logbook/logbook', ['lokbookHeaders' => $lookbookHeaders, 'today' => $today]);
     }
 

@@ -96,7 +96,7 @@ Accordion Tabs
                     <div class="portlet box bg-primary text-white mb-4">                       
                         <div class="portlet-body bg-white p-2">
                             <div class="table-scrollable">
-                                <table class="table table-hover table_{{$headers->logbookheaderid }}">
+                                <table class="table table-hover table_{{$headers->logbookheaderid }}" id="table_{{$headers->logbookheaderid }}">
                                     <thead>
                                         <tr>
                                         	<th width="50px" style="line-height:36px;"> Edit</th>
@@ -188,7 +188,7 @@ Accordion Tabs
         var addLogBookUrl  = $("#addLogBook").attr("href").split('?');
         $("#addLogBook").attr("href", addLogBookUrl[0]+"?id="+logBookId);
     });
-	$('.editNotes').click(function(){
+	$(document).on('click','.editNotes',function(){
 		$(this).parent().parent().find('td.notes').find('input').removeClass('disableClass');
 		$(this).parent().parent().find('td.notes').find('input').removeAttr('readonly');
 		$(this).parent().parent().find('td.notes').find('input').addClass('nonDisableNotes');
@@ -246,6 +246,11 @@ Accordion Tabs
 				  row += "<a id='"+ data.id +"' class='saveNotes' href='javascript:void(0)' style='position: absolute;right: 19px;top: 15px;'>";
 				  row += "<i class='livicon' data-name='save' data-size='24' data-c='#3278B3' data-hc='#5e646b' data-loop='true'></i></a></td>";
                	  row += "</tr>";
+               	  var s = $('.table_'+ id +' tbody tr:eq(0) td').length;               	
+               	  if(s == 1)
+               	  {
+				  	$('.table_'+ id +' tbody tr').remove();
+				  }
                	  $('.table_'+ id +' tbody').append(row);
                	  $('.table_'+ id +' tbody tr td i').updateLivicon();
                   alert(data.message); 	 	
@@ -254,7 +259,7 @@ Accordion Tabs
     	});
 	});
 	// Update Notes
-	$('.saveNotes').click(function(){
+	$(document).on('click','.saveNotes',function(){
 		var id = $(this).attr('id');
 		var OBJ = $(this);
 		var Value = $(this).parent().find('input').val();
@@ -275,9 +280,10 @@ Accordion Tabs
     	});
 	});
 	// Delete Notes
-	$('.deleteNotes').click(function(){
+	$(document).on('click','.deleteNotes',function(){	
 		var idString = $(this).attr('id').split('_');
 		var OBJ = $(this);
+		var tableId = $(this).parent().parent().parent().parent('table').attr('id');		
 		var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');		
 		 $.ajax({
             url: '/admin/deleteLogBookNotes',
@@ -286,7 +292,12 @@ Accordion Tabs
             data: {_token: CSRF_TOKEN,item: idString[1]},
             success:function(data){
                if(data.status == true){
-               	 $(OBJ).parent().parent().remove();
+               	 $(OBJ).parent().parent().remove();               	
+               	 var _size = $('#' + tableId +' tbody tr').length;               	 
+               	 if(_size <=0)
+               	 {
+				 	$('#' + tableId +' tbody').append("<tr><td colspan='3'>Notes Not Addes Yet!</td></tr>");
+				 }
 				  alert(data.message);
                }
             }
