@@ -62,225 +62,60 @@ Accordion Tabs
     </div>
     <div class="card-body">
         <div class="bs-example">
-            <ul class="nav nav-tabs" sty                                                                                                              le="margin-bottom: 15p                                                                                                              x;">               
-                <li class="nav-item">
-                    <a href="#monday" data-toggle="tab" class="nav-link active">Monday</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#tuesday" data-toggle="tab" class="nav-link">Tuesday</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#wednesday" data-toggle="tab" class="nav-link">Wednesday</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#thursday" data-toggle="tab" class="nav-link">Thursday</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#friday" data-toggle="tab" class="nav-link">Friday</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#saturday" data-toggle="tab" class="nav-link">Saturday</a>
-                </li>
-                <li class=" nav-item ">
-                    <a href="#sunday" data-toggle="tab" class="nav-link">Sunday</a>
-                </li>
+            <ul class="nav nav-tabs" style="margin-bottom: 15px;">               
+               @foreach ($frontdeskHeaders as $headers)  
+                <li class="nav-item pb-2">
+                    <a href="#id{{ $headers->logbookheaderid }}"  data-toggle="tab"  class="nav-link {{ ($headers->frontdeskdailydate==$today) ? 'active' : ''  }}" style="padding-bottom:0px!important">
+                        {{ $headers->frontdeskdailytitle }}
+                    </a>
+                    <span style="font-size:12px;text-align:center;display:block;">
+                        {{ $headers->frontdeskdailydate }}
+                    </span>  
+                </li>  
+                @endforeach
+                @foreach (Session::get('userPermissionDetail') as $userPermissionDetail)
+<!--               {{ $userPermissionDetail }}           -->
+                @if( $userPermissionDetail->userid ==  Sentinel::getUser()->id ) 
+                @if( $userPermissionDetail->edit == 1 )
                 <li class=" nav-item  ml-auto">
                     <a href="{{ route('admin.add-front-desk-task') }}" class="nav-link btn btn-primary rounded btn-xs py-1 px-2 onHover">Admin View</a>
-                </li>
+                </li>                   
+                @endif
+                @endif
+                @endforeach                  
             </ul>
-            <div id="myTabContent" class="tab-content" style="height:200px!important">               
-                <div class="tab-pane fade show active in  mt-3 ml-3" id="monday">
-                    <div class="form-check abc-checkbox abc-checkbox-primary">
-                        <input class="form-check-input" type="checkbox" id="singleCheckbox2" value="option2" checked aria-label="Single checkbox Two">
-                        <label class="form-check-label" for="singleCheckbox2">Set up coffee and tables
-                        </label>
-                    </div>
-                    <div class="form-check abc-checkbox abc-checkbox-primary mt-3 ">
-                        <input class="form-check-input" type="checkbox" id="singleCheckbox2" value="option2"  aria-label="Single checkbox Two">
-                        <label class="form-check-label" for="singleCheckbox2">Order Coffee
-                        </label>
-                    </div>
-                    <div class="form-check abc-checkbox abc-checkbox-primary mt-3">
-                        <input class="form-check-input" type="checkbox" id="singleCheckbox2" value="option2"  aria-label="Single checkbox Two">
-                        <label class="form-check-label" for="singleCheckbox2">Order Washing Detergent
-                        </label>
-                    </div>
-                    <div class="form-check abc-checkbox abc-checkbox-primary mt-3">
-                        <input class="form-check-input" type="checkbox" id="singleCheckbox2" value="option2"  aria-label="Single checkbox Two">
-                        <label class="form-check-label" for="singleCheckbox2">Order Blue Ribbon
-                        </label>
-                    </div>
-                </div>
-                <div class="tab-pane fade  mt-3 ml-3" id="tuesday">
-                    <div class="form-check abc-checkbox abc-checkbox-primary">
-                        <input class="form-check-input" type="checkbox" id="singleCheckbox2" value="option2" checked aria-label="Single checkbox Two">
-                        <label class="form-check-label" for="singleCheckbox2">Order USA Today
-                        </label>
-                    </div>
-                    <div class="form-check abc-checkbox abc-checkbox-primary mt-3 ">
-                        <input class="form-check-input" type="checkbox" id="singleCheckbox2" value="option2"  aria-label="Single checkbox Two">
-                        <label class="form-check-label" for="singleCheckbox2">Order Coffee
-                        </label>
-                    </div>
-                    <div class="form-check abc-checkbox abc-checkbox-primary mt-3">
-                        <input class="form-check-input" type="checkbox" id="singleCheckbox2" value="option2"  aria-label="Single checkbox Two">
-                        <label class="form-check-label" for="singleCheckbox2">Order Washing Detergent
-                        </label>
-                    </div>
-                    <div class="form-check abc-checkbox abc-checkbox-primary mt-3">
-                        <input class="form-check-input" type="checkbox" id="singleCheckbox2" value="option2"  aria-label="Single checkbox Two">
-                        <label class="form-check-label" for="singleCheckbox2">Order Blue Ribbon
-                        </label>
-                    </div>
-                </div>
-                <div class="tab-pane fade  mt-3 ml-3" id="wednesday">
-                    <div class="form-check abc-checkbox abc-checkbox-primary">
-                        <input class="form-check-input" type="checkbox" id="singleCheckbox2" value="option2" checked aria-label="Single checkbox Two">
-                        <label class="form-check-label" for="singleCheckbox2">Order USA Today
-                        </label>
-                    </div>
-                    <div class="form-check abc-checkbox abc-checkbox-primary mt-3 ">
-                        <input class="form-check-input" type="checkbox" id="singleCheckbox2" value="option2"  aria-label="Single checkbox Two">
-                        <label class="form-check-label" for="singleCheckbox2">Order Coffee
-                        </label>
-                    </div>
-                    <div class="form-check abc-checkbox abc-checkbox-primary mt-3">
-                        <input class="form-check-input" type="checkbox" id="singleCheckbox2" value="option2"  aria-label="Single checkbox Two">
-                        <label class="form-check-label" for="singleCheckbox2">Order Washing Detergent
-                        </label>
-                    </div>
-                    <div class="form-check abc-checkbox abc-checkbox-primary mt-3">
-                        <input class="form-check-input" type="checkbox" id="singleCheckbox2" value="option2"  aria-label="Single checkbox Two">
-                        <label class="form-check-label" for="singleCheckbox2">Order Blue Ribbon
-                        </label>
-                    </div>
-                </div>
-                <div class="tab-pane fade  mt-3 ml-3" id="thursday">
-                    <div class="form-check abc-checkbox abc-checkbox-primary">
-                        <input class="form-check-input" type="checkbox" id="singleCheckbox2" value="option2" checked aria-label="Single checkbox Two">
-                        <label class="form-check-label" for="singleCheckbox2">Order USA Today
-                        </label>
-                    </div>
-                    <div class="form-check abc-checkbox abc-checkbox-primary mt-3 ">
-                        <input class="form-check-input" type="checkbox" id="singleCheckbox2" value="option2"  aria-label="Single checkbox Two">
-                        <label class="form-check-label" for="singleCheckbox2">Order Coffee
-                        </label>
-                    </div>
-                    <div class="form-check abc-checkbox abc-checkbox-primary mt-3">
-                        <input class="form-check-input" type="checkbox" id="singleCheckbox2" value="option2"  aria-label="Single checkbox Two">
-                        <label class="form-check-label" for="singleCheckbox2">Order Washing Detergent
-                        </label>
-                    </div>
-                    <div class="form-check abc-checkbox abc-checkbox-primary mt-3">
-                        <input class="form-check-input" type="checkbox" id="singleCheckbox2" value="option2"  aria-label="Single checkbox Two">
-                        <label class="form-check-label" for="singleCheckbox2">Order Blue Ribbon
-                        </label>
-                    </div>
-                </div>
-                <div class="tab-pane fade  mt-3 ml-3" id="friday">
-                    <div class="form-check abc-checkbox abc-checkbox-primary">
-                        <input class="form-check-input" type="checkbox" id="singleCheckbox2" value="option2" checked aria-label="Single checkbox Two">
-                        <label class="form-check-label" for="singleCheckbox2">Order USA Today
-                        </label>
-                    </div>
-                    <div class="form-check abc-checkbox abc-checkbox-primary mt-3 ">
-                        <input class="form-check-input" type="checkbox" id="singleCheckbox2" value="option2"  aria-label="Single checkbox Two">
-                        <label class="form-check-label" for="singleCheckbox2">Order Coffee
-                        </label>
-                    </div>
-                    <div class="form-check abc-checkbox abc-checkbox-primary mt-3">
-                        <input class="form-check-input" type="checkbox" id="singleCheckbox2" value="option2"  aria-label="Single checkbox Two">
-                        <label class="form-check-label" for="singleCheckbox2">Order Washing Detergent
-                        </label>
-                    </div>
-                    <div class="form-check abc-checkbox abc-checkbox-primary mt-3">
-                        <input class="form-check-input" type="checkbox" id="singleCheckbox2" value="option2"  aria-label="Single checkbox Two">
-                        <label class="form-check-label" for="singleCheckbox2">Order Blue Ribbon
-                        </label>
-                    </div>
-                </div>
-                <div class="tab-pane fade  mt-3 ml-3" id="saturday">
-                    <div class="form-check abc-checkbox abc-checkbox-primary">
-                        <input class="form-check-input" type="checkbox" id="singleCheckbox2" value="option2" checked aria-label="Single checkbox Two">
-                        <label class="form-check-label" for="singleCheckbox2">Order USA Today
-                        </label>
-                    </div>
-                    <div class="form-check abc-checkbox abc-checkbox-primary mt-3 ">
-                        <input class="form-check-input" type="checkbox" id="singleCheckbox2" value="option2"  aria-label="Single checkbox Two">
-                        <label class="form-check-label" for="singleCheckbox2">Order Coffee
-                        </label>
-                    </div>
-                    <div class="form-check abc-checkbox abc-checkbox-primary mt-3">
-                        <input class="form-check-input" type="checkbox" id="singleCheckbox2" value="option2"  aria-label="Single checkbox Two">
-                        <label class="form-check-label" for="singleCheckbox2">Order Washing Detergent
-                        </label>
-                    </div>
-                    <div class="form-check abc-checkbox abc-checkbox-primary mt-3">
-                        <input class="form-check-input" type="checkbox" id="singleCheckbox2" value="option2"  aria-label="Single checkbox Two">
-                        <label class="form-check-label" for="singleCheckbox2">Order Blue Ribbon
-                        </label>
-                    </div>
+            <div id="myTabContent" class="tab-content" style="height:200px!important">  
+            	@foreach ($frontdeskHeaders as $headers)
+                <div @if( $headers->frontdeskdailydate == $today ) class="tab-pane fade show active in" @else class="tab-pane fade" @endif  id="id{{ $headers->frontdeskdailyheaderid }}">
+                      @if( sizeof($headers->frontdeskDetails )>0)
+                      @php $counter =1;@endphp
+                      @foreach ($headers->frontdeskDetails as $details)
+                      <p class="notes_list">                      
+                        {{ $details->description }}
+                      </p>
+                    	@php $counter++ @endphp
+                    @endforeach
+                    @else
+                    	 <p class="_blank">Task Not Created for this date!</p>
+                    @endif
+                    @if( sizeof($headers->frontdeskDetails )>0)
+                    
+                    <div class="ml-3 d-flex" style="font-size:16px;letter-spacing:1px;font-family:roboto;position:absolute;bottom:0;">                    	
+		                 <div class="form-check abc-checkbox abc-checkbox-primary">
+	                        <input class="form-check-input _selectAll" id="check_{{ $headers->managerweeklyheaderid }}" type="checkbox" aria-label="Single checkbox Two">
+	                        <label class="form-check-label" for="check_{{ $headers->managerweeklyheaderid }}">Select All</label>
+	                    </div>		                
+		                <div class="mx-4">
+		                    <a href="#" class="btn btn-primary  rounded py-1 px-4 ">Save</a>
+		                </div>
+		                <div class="mr-4">
+		                    <a href="#" class="btn btn-danger rounded py-1 px-4 ">Cancel</a>
+		                </div>
+		            </div>
+		            @endif
                 </div> 
-                <div class="tab-pane fade mt-3 ml-3" id="sunday">
-                    <div class="form-check abc-checkbox abc-checkbox-primary">
-                        <input class="form-check-input" type="checkbox" id="singleCheckbox2" value="option2" checked aria-label="Single checkbox Two">
-                        <label class="form-check-label" for="singleCheckbox2">Order USA Today
-                        </label>
-                    </div>
-                    <div class="form-check abc-checkbox abc-checkbox-primary mt-3 ">
-                        <input class="form-check-input" type="checkbox" id="singleCheckbox2" value="option2"  aria-label="Single checkbox Two">
-                        <label class="form-check-label" for="singleCheckbox2">Order Coffee
-                        </label>
-                    </div>
-                    <div class="form-check abc-checkbox abc-checkbox-primary mt-3">
-                        <input class="form-check-input" type="checkbox" id="singleCheckbox2" value="option2"  aria-label="Single checkbox Two">
-                        <label class="form-check-label" for="singleCheckbox2">Order Washing Detergent
-                        </label>
-                    </div>
-                    <div class="form-check abc-checkbox abc-checkbox-primary mt-3">
-                        <input class="form-check-input" type="checkbox" id="singleCheckbox2" value="option2"  aria-label="Single checkbox Two">
-                        <label class="form-check-label" for="singleCheckbox2">Order Blue Ribbon
-                        </label>
-                    </div>
-                </div>
-                <div class="tab-pane fade" id="dropdown1">
-                    <div class="form-check abc-checkbox abc-checkbox-primary">
-                        <input class="form-check-input" type="checkbox" id="singleCheckbox2" value="option2" checked aria-label="Single checkbox Two">
-                        <label class="form-check-label" for="singleCheckbox2">Order USA Today
-                        </label>
-                    </div>
-                    <div class="form-check abc-checkbox abc-checkbox-primary mt-3 ">
-                        <input class="form-check-input" type="checkbox" id="singleCheckbox2" value="option2"  aria-label="Single checkbox Two">
-                        <label class="form-check-label" for="singleCheckbox2">Order Coffee
-                        </label>
-                    </div>
-                    <div class="form-check abc-checkbox abc-checkbox-primary mt-3">
-                        <input class="form-check-input" type="checkbox" id="singleCheckbox2" value="option2"  aria-label="Single checkbox Two">
-                        <label class="form-check-label" for="singleCheckbox2">Order Washing Detergent
-                        </label>
-                    </div>
-                    <div class="form-check abc-checkbox abc-checkbox-primary mt-3">
-                        <input class="form-check-input" type="checkbox" id="singleCheckbox2" value="option2"  aria-label="Single checkbox Two">
-                        <label class="form-check-label" for="singleCheckbox2">Order Blue Ribbon
-                        </label>
-                    </div>
-                </div> 
-            </div>   
-            <div class="ml-3 d-flex" style="font-size:16px;letter-spacing: 1px;font-family: roboto">
-                <a href="#" class="underlineOnHover "> Select All
-                    <span class="ml-1">  | </span>
-                </a>
-                <a href="#" class="underlineOnHover ml-1"> Un-Select All </a>
-                <div class="mx-4">
-                    <a href="#" class="btn btn-primary  rounded py-1 px-4 ">Save</a>
-                </div>
-                <div class="mr-4">
-                    <a href="#" class="btn btn-danger rounded py-1 px-4 ">Cancel</a>
-                </div>
-                <!--                <div class="mr-4">
-                                    <a href="#" class="btn btn-danger rounded py-1 px-4 onHover">Delete</a>
-                                </div>-->
-            </div>
+                @endforeach  
+            </div> 
         </div>        
     </div> 
 </div>

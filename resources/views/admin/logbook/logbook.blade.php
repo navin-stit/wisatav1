@@ -86,8 +86,8 @@ Accordion Tabs
 				
                 @foreach (Session::get('userPermissionDetail') as $userPermissionDetail)
 <!--               {{ $userPermissionDetail }}           -->
-                @if( $userPermissionDetail->userid ===  Sentinel::getUser()->id ) 
-                @if( $userPermissionDetail->edit === 1 )
+                @if( $userPermissionDetail->userid ==  Sentinel::getUser()->id ) 
+                @if( $userPermissionDetail->edit == 1 )
                 <li class=" nav-item  ml-auto">
                     <a href="{{ route("admin.view-logbok") }}" class="nav-link btn btn-primary rounded btn-xs py-1 px-2 onHover">Admin View</a>
                 </li>                   

@@ -101,6 +101,11 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin', 'as' => 'admin.'], f
     Route::post('saveManagerTask', 'Admin\AdminViewController@saveManagerTask');
     Route::post('deleteManagerTask', 'Admin\AdminViewController@deleteManagerTask');
     
+    Route::post('updateFrontTask', 'Admin\AdminViewController@updateFrontTask');
+    Route::post('saveFronTask', 'Admin\AdminViewController@saveFronTask');
+    Route::post('deleteFrontTask', 'Admin\AdminViewController@deleteFrontTask');
+    
+    
     Route::post('addLogbokToDb', 'Admin\AdminViewController@addNewLogBook')->name('addLogbokToDb');   
    // Route::match(['get','post'],'add-logbook','Admin\AdminViewController@addNewLogBook')->name('add-logbook');
     #manager routes
