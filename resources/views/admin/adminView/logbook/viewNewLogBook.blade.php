@@ -11,6 +11,9 @@ Accordion Tabs
 	table tbody tr td i{
 		line-height: 38px;
 	}
+	.modal-body textarea{
+		resize: none;
+	}
 	.disableClass{
 		width: 100%;
 		border: 1px solid #cecece;
@@ -167,7 +170,7 @@ Accordion Tabs
       </div>
       <div class="modal-body">
       		<div class="col-12">
-      			<input type="text" class="form-control" id="notes_value" name="notes_value"/>	
+      			<textarea class="form-control" id="notes_value" name="notes_value"></textarea>
       		</div>
       </div>
       <div class="modal-footer">
@@ -182,6 +185,7 @@ Accordion Tabs
 @section('footer_scripts')
 <script src="{{ asset('js/pages/tabs_accordions.js') }}" type="text/javascript"></script>
 <script>
+	var APP_URL = {!! json_encode(url('/')) !!}
 	var _logbookId = 0;
     $(".logBookTab").click(function(){
         var logBookId = $(this).attr("href").replace('#id','');
@@ -207,7 +211,7 @@ Accordion Tabs
 		var Value = $('#notes_value').val();
 		var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');		
 		 $.ajax({
-            url: '/admin/saveLogBook',
+            url: APP_URL + '/admin/saveLogBook',
             type: 'POST',
             dataType: 'json',
             data: {_token: CSRF_TOKEN,item: id, anotherValue: Value},
@@ -265,7 +269,7 @@ Accordion Tabs
 		var Value = $(this).parent().find('input').val();
 		var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');		
 		 $.ajax({
-            url: '/admin/updateLogBook',
+            url: APP_URL + '/admin/updateLogBook',
             type: 'POST',
             dataType: 'json',
             data: {_token: CSRF_TOKEN,item: id, anotherValue: Value},
@@ -286,7 +290,7 @@ Accordion Tabs
 		var tableId = $(this).parent().parent().parent().parent('table').attr('id');		
 		var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');		
 		 $.ajax({
-            url: '/admin/deleteLogBookNotes',
+            url: APP_URL + '/admin/deleteLogBookNotes',
             type: 'POST',
             dataType: 'json',
             data: {_token: CSRF_TOKEN,item: idString[1]},

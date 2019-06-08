@@ -7,9 +7,29 @@ Accordion Tabs
 {{-- page level styles --}}
 @section('header_styles')
 <link rel="stylesheet" href="{{ asset('css/pages/tab.css') }}" />
+<link rel="stylesheet" type="text/css" href="{{ asset('css/pages/jquery-ui.css') }}"/>
 <style>
+	.modal-body h2{
+		font-size: 16px;
+		text-align: center;
+		background: #cecece;
+		padding: 8px;
+		font-weight: bold;
+	}
+	.tsknts{	
+		padding: 0;		
+		padding: 5px;
+		list-style: number;
+		margin-left: 15px;
+	}
+	.dtpic{
+		width:100%;
+	}
 	table tbody tr td i{
 		line-height: 38px;
+	}
+	.modal-body textarea{
+		resize: none;
 	}
 	.disableClass{
 		width: 100%;
@@ -96,6 +116,7 @@ Accordion Tabs
                                 <table class="table table-hover table_{{$headers->managerweeklyheaderid }}" id="table_{{$headers->managerweeklyheaderid }}">
                                     <thead>
                                         <tr>
+                                        	<th width="30px" style="line-height:36px;"> </th>
                                         	<th width="50px" style="line-height:36px;"> Edit</th>
                                         	<th width="50px" style="line-height:36px;"> Delete</th>
                                             <th> Manager Task 
@@ -107,6 +128,7 @@ Accordion Tabs
                                         @if(sizeof($headers->managerTaskDetails)>0 )
                                         @foreach ( $headers->managerTaskDetails as $taskDetail)
                                         <tr>
+                                        	<td><input class="form-check-input" id="chk_{{ $taskDetail->managerweeklydetailid }}" type="checkbox" aria-label="Single checkbox Two" style="margin:0;margin-top:9px;"></td>
                                         	<td> @foreach (Session::get('userPermissionDetail') as $userPermissionDetail)
                                                 @if( $userPermissionDetail->edit === 1 )
                                                 <a class="editNotes" href="javascript:void(0);" id="edit_{{$taskDetail->managerweeklydetailid}}">
@@ -140,7 +162,7 @@ Accordion Tabs
                                         @endforeach 
                                         @else
                                         	<tr>
-                                        		<td colspan="3">Task Not Created Yet!</td>
+                                        		<td colspan="4">Task Not Created Yet!</td>
                                         	</tr>
 										@endif
                                     </tbody>
@@ -148,26 +170,54 @@ Accordion Tabs
                             </div>
                         </div>
                     </div>
+                    @if( sizeof($headers->managerTaskDetails )>0)
+                    
+                    <div class="ml-3 d-flex" style="font-size:16px;letter-spacing:1px;font-family:roboto;position:absolute;bottom:0;">                    	
+		                 <div class="form-check abc-checkbox abc-checkbox-primary">
+	                        <input class="form-check-input _selectAll" id="check_{{ $headers->managerweeklyheaderid }}" type="checkbox" aria-label="Single checkbox Two">
+	                        <label class="form-check-label" for="check_{{ $headers->managerweeklyheaderid }}">Select All</label>
+	                    </div>		                
+		                <div class="mx-4">
+		                    <a href="javascript:void(0);" id="save_{{ $headers->managerweeklyheaderid }}" class="btn btn-primary  rounded py-1 px-4 disableBtn">Save</a>
+		                </div>
+		                <div class="mr-4">
+		                    <a href="javascript:void(0);" id="cancel_{{ $headers->managerweeklyheaderid }}"  class="btn btn-danger rounded py-1 px-4 disableBtn">Cancel</a>
+		                </div>
+		                <div class="mr-4">
+		                    <a data-toggle="modal" data-target="#copyModal" href="javascript:void(0);" id="copy_{{ $headers->managerweeklyheaderid }}"  class="btn btn-success rounded py-1 px-4 mdl_copy_open">Copy</a>
+		                </div>
+		            </div>
+		            @endif
                 </div>             
                 @endforeach     
-            </div>   
-            <!--<div class="ml-3 d-flex" style="font-size:16px;letter-spacing: 1px;font-family: roboto">
-                <a href="#" class="underlineOnHover "> Select All
-                    <span class="ml-1">  | </span>
-                </a>
-                <a href="#" class="underlineOnHover ml-1"> Un-Select All </a>
-                <div class="mx-4">
-                    <a href="#" class="btn btn-primary  rounded py-1 px-4 ">Save</a>
-                </div>
-                <div class="mr-4">
-                    <a href="#" class="btn btn-success rounded py-1 px-4">Copy</a>
-                </div>
-                <div class="mr-4 ml-auto">
-                    <a href="#" class="btn btn-danger rounded py-1 px-4 ">Cancel</a>
-                </div>                
-            </div>-->
+            </div>  
         </div>        
     </div> 
+</div>
+<div class="modal fade" id="copyModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="position: absolute;right: 20px;"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel" style="width:100%;text-align:center;font-weight: bold;color: #EF6F6C;"></h4>
+      </div>
+      <div class="modal-body">
+      		<div class="col-12">
+      			<h2>Task Selected</h2>
+      		<ul class="tsks" style="padding:0;margin:0;">      			
+      		</ul>
+      		</div>
+      		<br/>
+      		<div class="col-12">
+      			 <input id="multiple-date-select" placeholder="Select For Which Dates" class="form-control dtpic datepicker" data-date-format="YYYY-MM-DD" />
+      		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary _saveTasks">Save Tasks</button>
+      </div>
+    </div>
+  </div>
 </div>
 <div class="modal fade" id="yourModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
@@ -178,7 +228,7 @@ Accordion Tabs
       </div>
       <div class="modal-body">
       		<div class="col-12">
-      			<input type="text" class="form-control" id="notes_value" name="notes_value"/>	
+      			<textarea class="form-control" id="notes_value" name="notes_value"></textarea>	
       		</div>
       </div>
       <div class="modal-footer">
@@ -192,17 +242,82 @@ Accordion Tabs
 {{-- page level scripts --}}
 @section('footer_scripts')
 <script src="{{ asset('js/pages/tabs_accordions.js') }}" type="text/javascript"></script>
+<script type="text/javascript" src="{{ asset('js/pages/jquery-ui.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/pages/jquery-ui.multidatespicker.js') }}"></script>
+
 <script>
-	var _logbookId = 0;
-    $(".logBookTab").click(function(){
-        var logBookId = $(this).attr("href").replace('#id','');
-        var addLogBookUrl  = $("#addLogBook").attr("href").split('?');
-        $("#addLogBook").attr("href", addLogBookUrl[0]+"?id="+logBookId);
-    });
+	$(document).ready(function(){
+		$('#multiple-date-select').multiDatesPicker({
+			minDate : 0
+		});
+	});
+	$(document).on('click','._saveTasks',function(){
+		var id = _logbookId;
+		var TaskIds = [];		
+		$('#table_' + id + ' tbody tr td input[type=checkbox]').each(function(){
+			if($(this).is(':checked') == true)
+			{
+				var tsk = $(this).parent().parent().find('.notes').find('input').val();				
+				var idd = $(this).attr('id').split('_');				
+				TaskIds.push(idd[1]);				
+			}
+		});
+		var dates = $('#multiple-date-select').val();
+		var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');		
+		 $.ajax({
+            url: APP_URL + '/admin/updateManagerFutureTask',
+            type: 'POST',
+            dataType: 'json',
+            data: {_token: CSRF_TOKEN,item: id, tasks: TaskIds, fDates:dates},
+            success:function(data){
+               if(data.status == true){                  
+				  alert("Copied Successfully!");
+				  $('#multiple-date-select').val("");
+				  $('#copyModal').modal('hide');
+               }
+            }
+    	});
+	});
+	var APP_URL = {!! json_encode(url('/')) !!}
+	$(document).on('change','._selectAll',function(){
+		var tId = $(this).attr('id').split('_');
+		if($(this).is(':checked') == true)
+		{
+			$('#table_' +tId[1] + ' tbody tr td input[type=checkbox]').each(function(){
+				$(this).prop('checked',true);
+			});
+		}
+		else if($(this).is(':checked') == false)
+		{
+			$('#table_' +tId[1] + ' tbody tr td input[type=checkbox]').each(function(){
+				$(this).prop('checked',false);
+			});
+		}		
+	});
+	var _logbookId = 0;  
 	$(document).on('click','.editNotes',function(){
 		$(this).parent().parent().find('td.notes').find('input').removeClass('disableClass');
 		$(this).parent().parent().find('td.notes').find('input').removeAttr('readonly');
 		$(this).parent().parent().find('td.notes').find('input').addClass('nonDisableNotes');
+	});
+	
+	$('.mdl_copy_open').click(function(){
+		var TaskIds = [];
+		var ids = $(this).attr('id').split('_');
+		var _title = $('.taskTabs li#LI_' + ids[1] + ' a').html();
+		var _date = $('.taskTabs li#LI_' + ids[1] + ' span').text();
+		$('#copyModal .modal-header .modal-title').html("Copy From " + _title + '  (' +  _date + ')');
+		$('#multiple-date-select').val("");
+		$('#table_' + ids[1] + ' tbody tr td input[type=checkbox]').each(function(){
+			if($(this).is(':checked') == true)
+			{
+				var tsk = $(this).parent().parent().find('.notes').find('input').val();				
+				var idd = $(this).attr('id').split('_');				
+				TaskIds.push(idd[1]);
+				$('#copyModal .modal-body .tsks').append('<li class="tsknts">' + tsk + '</li>');
+			}
+		});
+		_logbookId = ids[1];
 	});
 	$('.mdl_open').click(function(){
 		var ids = $(this).attr('id').split('_');
@@ -218,7 +333,7 @@ Accordion Tabs
 		var Value = $('#notes_value').val();
 		var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');		
 		 $.ajax({
-            url: '/admin/saveManagerTask',
+            url: APP_URL + '/admin/saveManagerTask',
             type: 'POST',
             dataType: 'json',
             data: {_token: CSRF_TOKEN,item: id, anotherValue: Value},
@@ -276,7 +391,7 @@ Accordion Tabs
 		var Value = $(this).parent().find('input').val();
 		var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');		
 		 $.ajax({
-            url: '/admin/updateManagerTask',
+            url: APP_URL + '/admin/updateManagerTask',
             type: 'POST',
             dataType: 'json',
             data: {_token: CSRF_TOKEN,item: id, anotherValue: Value},
@@ -297,7 +412,7 @@ Accordion Tabs
 		var tableId = $(this).parent().parent().parent().parent('table').attr('id');		
 		var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');		
 		 $.ajax({
-            url: '/admin/deleteManagerTask',
+            url: APP_URL + '/admin/deleteManagerTask',
             type: 'POST',
             dataType: 'json',
             data: {_token: CSRF_TOKEN,item: idString[1]},

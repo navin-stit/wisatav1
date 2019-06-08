@@ -100,6 +100,9 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin', 'as' => 'admin.'], f
     Route::post('updateManagerTask', 'Admin\AdminViewController@updateManagerTask');
     Route::post('saveManagerTask', 'Admin\AdminViewController@saveManagerTask');
     Route::post('deleteManagerTask', 'Admin\AdminViewController@deleteManagerTask');
+    Route::post('updateManagerTaskStatus', 'Admin\AdminViewController@updateManagerTaskStatus');
+    Route::post('updateManagerFutureTask', 'Admin\AdminViewController@updateManagerFutureTask');
+    
     
     Route::post('updateFrontTask', 'Admin\AdminViewController@updateFrontTask');
     Route::post('saveFronTask', 'Admin\AdminViewController@saveFronTask');

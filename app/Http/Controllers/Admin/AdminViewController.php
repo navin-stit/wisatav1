@@ -174,6 +174,48 @@ class AdminViewController extends Controller {
             	echo json_encode(array('status'=>FALSE,'message'=>'Something Wrong! Try Again Later.'));
         }
 	}
+	public function updateManagerFutureTask(Request $request)
+	{
+		if ($request->isMethod('post')) {          
+            $posts = $request->post();           
+            $id = $request->user()->id;
+            $response = array();
+            if(sizeof($posts['tasks'])>0)
+            {
+            	$dates = explode(",",$posts['fDates']);  
+            	foreach($dates as $fdate)
+				{
+					$unixTimestamp = strtotime($fdate);
+					$dayOfWeek = date("l", $unixTimestamp);
+					$is_insert_id = DB::insert('insert into manager_weekly_headers (managerweeklydate,managerweeklytitle,created_at,updated_at,createdbyid) values(?,?,?,?,?)',[date('Y-m-d',$unixTimestamp),$dayOfWeek,date('Y-m-d h:i:s'),date('Y-m-d h:i:s'),$id]);
+					$IDD = DB::getPdo()->lastInsertId();
+					foreach($posts['tasks'] as $task)
+					{
+						$existingTask = DB::select("Select * from manager_weekly_details where managerweeklydetailid=".$task);					
+						$is_insert = DB::insert('insert into manager_weekly_details (managerweeklyheaderid,description,iscompleted,completedon,completedbyid,created_at,updated_at,createdbyid) values(?,?,?,?,?,?,?,?)',[$IDD,$existingTask[0]->description,0,'0000-00-00 00:00:00',0,date('Y-m-d h:i:s'),date('Y-m-d h:i:s'),$id]);
+						if($is_insert >0)
+						{
+							$response['status'] = TRUE;
+						}
+						
+					}
+				}
+			}
+			echo json_encode($response);
+        }
+	}
+	public function updateManagerTaskStatus(Request $request)
+	{
+		if ($request->isMethod('post')) {          
+            $posts = $request->post();
+            $id = $request->user()->id;
+            $is_updated = DB::update('update manager_weekly_details set iscompleted = ? , completedon = ?, completedbyid = ? where managerweeklydetailid = ?', [1,date('Y-m-d h:i:s') ,$id, $posts['item']]);
+            if($is_updated >= 0)
+				echo json_encode(array('status'=>true,'message'=>'Updated Successfully!'));	
+			else
+            	echo json_encode(array('status'=>FALSE,'message'=>'Something Wrong! Try Again Later.'));
+        }
+	}
 	/* Front Desk Start */
     public function addFrontDeskDailyTask() {
     	$today = date('Y-m-d');

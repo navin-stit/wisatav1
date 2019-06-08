@@ -8,6 +8,20 @@ Accordion Tabs
 @section('header_styles')
 <link rel="stylesheet" href="{{ asset('css/pages/tab.css') }}" />
 <style>
+	.disableBtn
+	{
+		background:#cecece;
+		color:#7e7e7e !important;
+		border: none;
+		cursor: default;
+	}
+	.disableBtn:hover
+	{
+		background:#cecece;
+		color:#7e7e7e !important;
+		border: none !important;
+		cursor: default;
+	}
     .slimScrollDiv, .tab-content{
         height: 200px !important;
     }
@@ -41,6 +55,13 @@ Accordion Tabs
     .tab_panel .nav-link:active{
         background-color: rgba(255, 255, 255, .23);
     }
+    .mtask
+    {
+		padding-bottom: 10px;border-bottom: 1px solid #cecece;margin-bottom: 10px;
+	}
+	.mtask input{
+		margin-top: 7px;
+	}
 </style>
 @stop
 
@@ -89,8 +110,8 @@ Accordion Tabs
                       @php $counter =1;@endphp
                       @foreach ($headers->managerTaskDetails as $details)
                                           	 
-                      <div class="form-check abc-checkbox abc-checkbox-primary">
-                        <input type="checkbox" class="form-check-input" @if( $details->iscompleted) checked="true"  @endif  id="{{$details->managerweeklydetailid}}" aria-label="Single checkbox Two"/>
+                      <div class="form-check abc-checkbox abc-checkbox-primary mtask" id="inpDiv_{{ $headers->managerweeklyheaderid }}">
+                        <input type="checkbox" class="form-check-input _inputtask" @if( $details->iscompleted) checked="true" disabled="disabled"  @endif  id="{{$details->managerweeklydetailid}}" aria-label="Single checkbox Two"/>
                         <label class="form-check-label" for="{{$details->managerweeklydetailid}}">{{ $details->description }}</label>
                     </div>  
                     	@php $counter++ @endphp
@@ -106,10 +127,10 @@ Accordion Tabs
 	                        <label class="form-check-label" for="check_{{ $headers->managerweeklyheaderid }}">Select All</label>
 	                    </div>		                
 		                <div class="mx-4">
-		                    <a href="#" class="btn btn-primary  rounded py-1 px-4 ">Save</a>
+		                    <a href="javascript:void(0);" id="save_{{ $headers->managerweeklyheaderid }}" class="btn btn-primary  rounded py-1 px-4 disableBtn">Save</a>
 		                </div>
 		                <div class="mr-4">
-		                    <a href="#" class="btn btn-danger rounded py-1 px-4 ">Cancel</a>
+		                    <a href="javascript:void(0);" id="cancel_{{ $headers->managerweeklyheaderid }}"  class="btn btn-danger rounded py-1 px-4 disableBtn">Cancel</a>
 		                </div>
 		            </div>
 		            @endif
@@ -124,20 +145,84 @@ Accordion Tabs
 @section('footer_scripts')
 <script src="{{ asset('js/pages/tabs_accordions.js') }}" type="text/javascript"></script>
 <script type="text/javascript">
+	$(document).on('change','._inputtask',function(){
+		var Ids = $(this).parent().attr('id').split('_');
+		if($(this).is(':checked')== true)	
+		{
+			$('#save_' + Ids[1]).removeClass('disableBtn');
+			$('#save_' + Ids[1]).addClass('_saveCompleteTask');
+			$('#cancel_' + Ids[1]).removeClass('disableBtn');
+			$('#cancel_' + Ids[1]).addClass('_cancelCompleteTask');			
+		}
+		else if($(this).is(':checked')== false)	
+		{
+			var isAll = false;
+			$('#myTabContent #id'+Ids[1] + ' .form-check input[type=checkbox]').each(function(){
+				if($(this).is(':checked')== true){
+					isAll = true;
+				}
+			});	
+			if(isAll === false)	{
+				$('#save_' + Ids[1]).addClass('disableBtn');
+				$('#save_' + Ids[1]).removeClass('_saveCompleteTask');
+				$('#cancel_' + Ids[1]).addClass('disableBtn');
+				$('#cancel_' + Ids[1]).removeClass('_cancelCompleteTask');
+			}
+		}
+	});
 	$(document).on('change','._selectAll',function(){
 		var tId = $(this).attr('id').split('_');
 		if($(this).is(':checked')== true)	
 		{
+			$('#save_' + tId[1]).removeClass('disableBtn');
+			$('#save_' + tId[1]).addClass('_saveCompleteTask');
+			$('#cancel_' + tId[1]).removeClass('disableBtn');
+			$('#cancel_' + tId[1]).addClass('_cancelCompleteTask');
 			$('#myTabContent #id'+tId[1] + ' .form-check input[type=checkbox]').each(function(){
 				$(this).prop('checked',true);
 			});
 		}
 		else if($(this).is(':checked')== false)	
 		{
+			$('#save_' + tId[1]).addClass('disableBtn');
+			$('#save_' + tId[1]).removeClass('_saveCompleteTask');
+			$('#cancel_' + tId[1]).addClass('disableBtn');
+			$('#cancel_' + tId[1]).removeClass('_cancelCompleteTask');
 			$('#myTabContent #id'+tId[1] + ' .form-check input[type=checkbox]').each(function(){
 				$(this).prop('checked',false);
 			});
 		}
+	});
+	$(document).on('click','._saveCompleteTask',function(){
+		var idString = $(this).attr('id').split('_');		
+		if(confirm("Are you sure you want to save.? "))
+		{
+			$('#myTabContent #id'+ idString[1] + ' .form-check input[type=checkbox]').each(function(){
+				var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');	
+				var id = $(this).attr('id');	
+				 $.ajax({
+		            url: APP_URL + '/admin/updateManagerTaskStatus',
+		            type: 'POST',
+		            dataType: 'json',
+		            data: {_token: CSRF_TOKEN,item: id, anotherValue: Value},
+		            success:function(data){
+		               if(data.status == true){		               	 
+		                  alert(data.message); 	 	
+		               }
+		            }
+		    	});
+			});
+		}
+	});
+	$(document).on('click','._cancelCompleteTask',function(){
+		var idString = $(this).attr('id').split('_');		
+		$('#myTabContent #id'+ idString[1] + ' .form-check input[type=checkbox]').each(function(){
+			$(this).prop('checked',false);
+			$('#save_' + tId[1]).addClass('disableBtn');
+			$('#save_' + tId[1]).removeClass('_saveCompleteTask');
+			$('#cancel_' + tId[1]).addClass('disableBtn');
+			$('#cancel_' + tId[1]).removeClass('_cancelCompleteTask');
+		});
 	});
 </script>
 @stop
