@@ -187,8 +187,19 @@ class AdminViewController extends Controller {
 				{
 					$unixTimestamp = strtotime($fdate);
 					$dayOfWeek = date("l", $unixTimestamp);
-					$is_insert_id = DB::insert('insert into manager_weekly_headers (managerweeklydate,managerweeklytitle,created_at,updated_at,createdbyid) values(?,?,?,?,?)',[date('Y-m-d',$unixTimestamp),$dayOfWeek,date('Y-m-d h:i:s'),date('Y-m-d h:i:s'),$id]);
-					$IDD = DB::getPdo()->lastInsertId();
+					
+					 $d = date('Y-m-d',$unixTimestamp);
+					$managerHeaders = managerTaskHeader::select('*')->where('managerweeklydate',$d)->get();
+					if(sizeof($managerHeaders)<=0)
+					{
+						$is_insert_id = DB::insert('insert into manager_weekly_headers (managerweeklydate,managerweeklytitle,created_at,updated_at,createdbyid) values(?,?,?,?,?)',[date('Y-m-d',$unixTimestamp),$dayOfWeek,date('Y-m-d h:i:s'),date('Y-m-d h:i:s'),$id]);
+						$IDD = DB::getPdo()->lastInsertId();
+					}
+					else
+					{
+						$IDD = $managerHeaders[0]->managerweeklyheaderid;
+					}
+					
 					foreach($posts['tasks'] as $task)
 					{
 						$existingTask = DB::select("Select * from manager_weekly_details where managerweeklydetailid=".$task);					

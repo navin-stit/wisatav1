@@ -247,8 +247,10 @@ Accordion Tabs
 
 <script>
 	$(document).ready(function(){
+		var d = new Date();
+		d.setDate(d.getDate() + (1 + 7 - d.getDay()) % 7)
 		$('#multiple-date-select').multiDatesPicker({
-			minDate : 0
+			minDate : d
 		});
 	});
 	$(document).on('click','._saveTasks',function(){
@@ -303,6 +305,7 @@ Accordion Tabs
 	
 	$('.mdl_copy_open').click(function(){
 		var TaskIds = [];
+		$('#copyModal .modal-body .tsks li').remove();
 		var ids = $(this).attr('id').split('_');
 		var _title = $('.taskTabs li#LI_' + ids[1] + ' a').html();
 		var _date = $('.taskTabs li#LI_' + ids[1] + ' span').text();
@@ -344,6 +347,7 @@ Accordion Tabs
                	  var row = "<tr>";
                	  if(data.can_edit == true)
                	  {
+               	  	row += "<td><input class='form-check-input' id='chk_" + data.id + "' type='checkbox' aria-label='Single checkbox Two' style='margin:0;margin-top:9px;'></td>";
 				  	row += "<td><a class='editNotes' href='javascript:void(0);' id='edit_"+ data.id +"'>";
 				  	row += "<i class='livicon mr-3' data-name='edit' data-size='18' data-c='#418BCA' data-hc='#418BCA' data-loop='true'></i>";
 					row += "</a></td>";	
