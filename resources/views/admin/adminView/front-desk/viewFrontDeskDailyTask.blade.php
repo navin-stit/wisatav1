@@ -98,7 +98,7 @@ Accordion Tabs
             <ul class="nav nav-tabs taskTabs" style="margin-bottom: 15px;">               
                 @php $counter=1 @endphp         
                	@foreach ($frontdeskHeaders['dates'] as $key=>$headers)                 	
-                <li class="nav-item pb-2">
+                <li class="nav-item pb-2" id="LI_{{ $frontdeskHeaders['frontdeskHeaders'][0]->frontdeskdailyheaderid}}_{{$counter}}">
                 	@php $id = str_replace(':','_',$key) @endphp
                 	@if($counter == 1)
                 		<a href="#id_{{ $frontdeskHeaders['frontdeskHeaders'][0]->frontdeskdailyheaderid}}_{{$counter}}"  data-toggle="tab"  class="nav-link active" style="padding-bottom:0px!important">
@@ -130,7 +130,7 @@ Accordion Tabs
                                         	<th width="50px" style="line-height:36px;"> Edit</th>
                                         	<th width="50px" style="line-height:36px;"> Delete</th>
                                             <th> Front Desk Task 
-                                            <a id="LBook_{{ $frontdeskHeaders['frontdeskHeaders'][0]->frontdeskdailyheaderid}}" data-toggle="modal" data-target="#yourModal" href="javascript:void(0);" class="btn btn-sm btn-primary mdl_open" style="float:right;"><span class="fa fa-plus" ></span>  Add Task</a>   
+                                            <a id="LBook_{{ $frontdeskHeaders['frontdeskHeaders'][0]->frontdeskdailyheaderid}}_{{$counter}}" data-toggle="modal" data-target="#yourModal" href="javascript:void(0);" class="btn btn-sm btn-primary mdl_open" style="float:right;"><span class="fa fa-plus" ></span>  Add Task</a>   
                                             </th>  
                                         </tr>
                                     </thead>
@@ -270,10 +270,9 @@ Accordion Tabs
 		$(this).parent().parent().find('td.notes').find('input').addClass('nonDisableNotes');
 	});
 	$('.mdl_open').click(function(){
-		var ids = $(this).attr('id').split('_');
-		var _title = $('.taskTabs li#LI_' + ids[1] + ' a').html();
-		var _date = $('.taskTabs li#LI_' + ids[1] + ' span').text();
-		$('#yourModal .modal-header .modal-title').html("Task for " + _title + '  (' +  _date + ')');
+		var ids = $(this).attr('id').split('_');		
+		var _title = $('.taskTabs li#LI_' + ids[1] + '_' + ids[2] + ' a').html();
+		$('#yourModal .modal-header .modal-title').html("Task for " + _title );
 		$('#notes_value').val("");
 		_logbookId = ids[1];
 	});
