@@ -17,49 +17,61 @@ class FrontDeskDailyController extends Controller
     public function viewFrontDesk(Request $request)
     {    	
     	$today = date('Y-m-d');
-        $weekDates = array();
-        $weekDays = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']; 
-        foreach($weekDays as $days)
-		{
-		 	$day_value = date('Y-m-d', strtotime($days . ' this week'));
-		 	array_push($weekDates,$day_value); 	
-		}
-        $frontdeskHeaders = DB::table('front_desk_daily_headers')->select('*')->whereIn('frontdeskdailydate',$weekDates)->get(); 
+        $weekDates = array();    
+        $starttime = '9:00'; 
+		$endtime = '15:00';
+		$duration = '60';
+
+		$array_of_time = array ();
+		$start_time    = strtotime ($starttime);
+		$end_time      = strtotime ($endtime);
+		$add_mins  = $duration * 60;
+        
+        $frontdeskHeaders = DB::table('front_desk_daily_headers')->select('*')->where('frontdeskdailydate',$today)->get();
+        $response = array();
         if(sizeof($frontdeskHeaders)<=0)
-        {			 
-        	 $not_exits = array();
-			 $id = $request->user()->id;
-			 foreach($weekDays as $days)
-			 {
-			 	$day_value = date('Y-m-d', strtotime($days . ' this week'));
-			 	DB::insert('insert into front_desk_daily_headers (frontdeskdailydate,frontdeskdailytitle,created_at,updated_at,createdbyid) values(?,?,?,?,?)',[$day_value,$days,time(),time(),$id]); 
-			 	array_push($not_exits,array($day_value,$days,time(),time(),$id));
-			 }			 
+        {			
+			 $id = $request->user()->id;	
+			 $days = date('l');		 
+			 $day_value = date('Y-m-d', strtotime($days . ' this week'));
+			 DB::insert('insert into front_desk_daily_headers (frontdeskdailydate,frontdeskdailytitle,created_at,updated_at,createdbyid) values(?,?,?,?,?)',[$day_value,$days,date('Y-m-d h:i:s'),date('Y-m-d h:i:s'),$id]); 
+			 $frontdeskHeaders = DB::table('front_desk_daily_headers')->select('*')->where('frontdeskdailydate',$today)->get();
+			 $response['frontdeskHeaders'] = $frontdeskHeaders;
+			 $response['dates'] = array();
+			 while ($start_time <= $end_time)
+			 {							
+			   $etime = $start_time + (59*60);			
+			   $array_of_time[] = date("H:i", $start_time).'-'.date("H:i", $etime);
+			   if(!array_key_exists(date("H:i", $start_time).'-'.date("H:i", $etime),$response['dates']))
+			   {
+			   	  $response['dates'][date("H:i", $start_time).'-'.date("H:i", $etime)] = array();	
+			   }
+			   $start_time += $add_mins;		   
+			 }
+			 $response['dates'] = $array_of_time;
 		}
 		else
 		{
-			$not_exits = array();
-			foreach($weekDays as $days)
-			{				
-				$is_day_exists = FALSE;
-			 	$day_value = date('Y-m-d', strtotime($days . ' this week'));
-			 	foreach($frontdeskHeaders as $headers)
-				{
-					if($day_value == $headers->frontdeskdailydate)
-					{
-						$is_day_exists = TRUE;
-					}
-				}
-				if($is_day_exists === FALSE)
-				{
-					$id = $request->user()->id;
-					DB::insert('insert into front_desk_daily_headers (frontdeskdailydate,frontdeskdailytitle,created_at,updated_at,createdbyid) values(?,?,?,?,?)',[$day_value,$days,time(),time(),$id]); 
-					array_push($not_exits,array($day_value,$days,time(),time(),$id));
-				}
-			}
-		}
-		$frontdeskHeaders = frontdeskHeader::select('*')->whereIn('frontdeskdailydate',$weekDates)->with('frontdeskDetails')->get(); 
-		return view('admin/frontdeskdaily/frontDeskDailyTask', ['frontdeskHeaders' => $frontdeskHeaders, 'today' => $today]);        
+			$response['frontdeskHeaders'] = $frontdeskHeaders;
+			$response['dates'] = array();
+			while ($start_time <= $end_time)
+			{							
+			   $etime = $start_time + (59*60);			
+			   $array_of_time[] = date("H:i", $start_time).'-'.date("H:i", $etime);
+			   if(!array_key_exists(date("H:i", $start_time).'-'.date("H:i", $etime),$response['dates']))
+			   {
+			   	  $response['dates'][date("H:i", $start_time).'-'.date("H:i", $etime)] = array();	
+			   }
+			   
+			   $frontdeskDetails = DB::table('front_desk_daily_details')->select('*')->where(array('startdatetime'=>date('Y-m-d '.date("H:i", $start_time)),'enddatetime'=>date('Y-m-d '.date("H:i", $etime))))->get();
+			   if(sizeof($frontdeskDetails)>0)
+			   {
+			   		$response['dates'][date("H:i", $start_time).'-'.date("H:i", $etime)] = $frontdeskDetails;
+			   }
+			   $start_time += $add_mins;		   
+			}			
+		}		
+		return view('admin/frontdeskdaily/frontDeskDailyTask', ['frontdeskHeaders' => $response]);        
     }
 
     /**

@@ -230,15 +230,61 @@ class AdminViewController extends Controller {
 	/* Front Desk Start */
     public function addFrontDeskDailyTask() {
     	$today = date('Y-m-d');
-        $weekDates = array();
-        $weekDays = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']; 
-        foreach($weekDays as $days)
-		{
-		 	$day_value = date('Y-m-d', strtotime($days . ' this week'));
-		 	array_push($weekDates,$day_value); 	
+        $weekDates = array();    
+        $starttime = '9:00'; 
+		$endtime = '15:00';
+		$duration = '60';
+
+		$array_of_time = array ();
+		$start_time    = strtotime ($starttime);
+		$end_time      = strtotime ($endtime);
+		$add_mins  = $duration * 60;
+        
+        $frontdeskHeaders = DB::table('front_desk_daily_headers')->select('*')->where('frontdeskdailydate',$today)->get();
+        $response = array();
+        if(sizeof($frontdeskHeaders)<=0)
+        {			
+			 $id = $request->user()->id;	
+			 $days = date('l');		 
+			 $day_value = date('Y-m-d', strtotime($days . ' this week'));
+			 DB::insert('insert into front_desk_daily_headers (frontdeskdailydate,frontdeskdailytitle,created_at,updated_at,createdbyid) values(?,?,?,?,?)',[$day_value,$days,date('Y-m-d h:i:s'),date('Y-m-d h:i:s'),$id]); 
+			 $frontdeskHeaders = DB::table('front_desk_daily_headers')->select('*')->where('frontdeskdailydate',$today)->get();
+			 $response['frontdeskHeaders'] = $frontdeskHeaders;
+			 $response['dates'] = array();
+			 while ($start_time <= $end_time)
+			 {							
+			   $etime = $start_time + (59*60);			
+			   $array_of_time[] = date("H:i", $start_time).'-'.date("H:i", $etime);
+			   if(!array_key_exists(date("H:i", $start_time).'-'.date("H:i", $etime),$response['dates']))
+			   {
+			   	  $response['dates'][date("H:i", $start_time).'-'.date("H:i", $etime)] = array();	
+			   }
+			   $start_time += $add_mins;		   
+			 }
+			 $response['dates'] = $array_of_time;
 		}
-        $frontTaskHeaders = frontdeskHeader::select('*')->whereIn('frontdeskdailydate',$weekDates)->with('frontdeskDetails')->get(); 
-		return view('admin/adminView/front-desk/viewFrontDeskDailyTask', ['frontTaskHeaders' => $frontTaskHeaders, 'today' => $today]);        
+		else
+		{
+			$response['frontdeskHeaders'] = $frontdeskHeaders;
+			$response['dates'] = array();
+			while ($start_time <= $end_time)
+			{							
+			   $etime = $start_time + (59*60);			
+			   $array_of_time[] = date("H:i", $start_time).'-'.date("H:i", $etime);
+			   if(!array_key_exists(date("H:i", $start_time).'-'.date("H:i", $etime),$response['dates']))
+			   {
+			   	  $response['dates'][date("H:i", $start_time).'-'.date("H:i", $etime)] = array();	
+			   }
+			   
+			   $frontdeskDetails = DB::table('front_desk_daily_details')->select('*')->where(array('startdatetime'=>date('Y-m-d '.date("H:i", $start_time)),'enddatetime'=>date('Y-m-d '.date("H:i", $etime))))->get();
+			   if(sizeof($frontdeskDetails)>0)
+			   {
+			   		$response['dates'][date("H:i", $start_time).'-'.date("H:i", $etime)] = $frontdeskDetails;
+			   }
+			   $start_time += $add_mins;		   
+			}			
+		}	
+		return view('admin/adminView/front-desk/viewFrontDeskDailyTask', ['frontdeskHeaders' => $response]);        
     }
 	public function deleteFrontTask(Request $request)
     {
@@ -281,6 +327,18 @@ class AdminViewController extends Controller {
             $posts = $request->post();
             $id = $request->user()->id;
             $is_updated = DB::update('update front_desk_daily_details set description = ? , updated_at = ? where frontdeskdailydetailid = ?', [$posts['anotherValue'] , date('Y-m-d h:i:s') ,$posts['item']]);
+            if($is_updated >= 0)
+				echo json_encode(array('status'=>true,'message'=>'Updated Successfully!'));	
+			else
+            	echo json_encode(array('status'=>FALSE,'message'=>'Something Wrong! Try Again Later.'));
+        }
+	}
+	public function updateFrontTaskStatus(Request $request)
+	{
+		if ($request->isMethod('post')) {          
+            $posts = $request->post();
+            $id = $request->user()->id;
+            $is_updated = DB::update('update front_desk_daily_details set iscompleted = ? , completedon = ?, completedbyid = ? where frontdeskdailydetailid = ?', [1,date('Y-m-d h:i:s') ,$id, $posts['item']]);
             if($is_updated >= 0)
 				echo json_encode(array('status'=>true,'message'=>'Updated Successfully!'));	
 			else

@@ -7,7 +7,24 @@ Accordion Tabs
 {{-- page level styles --}}
 @section('header_styles')
 <link rel="stylesheet" href="{{ asset('css/pages/tab.css') }}" />
+<link rel="stylesheet" type="text/css" href="{{ asset('css/pages/jquery-ui.css') }}"/>
 <style>
+	.modal-body h2{
+		font-size: 16px;
+		text-align: center;
+		background: #cecece;
+		padding: 8px;
+		font-weight: bold;
+	}
+	.tsknts{	
+		padding: 0;		
+		padding: 5px;
+		list-style: number;
+		margin-left: 15px;
+	}
+	.dtpic{
+		width:100%;
+	}
 	table tbody tr td i{
 		line-height: 38px;
 	}
@@ -79,41 +96,52 @@ Accordion Tabs
     <div class="card-body">
         <div class="bs-example">
             <ul class="nav nav-tabs taskTabs" style="margin-bottom: 15px;">               
-               @foreach ($frontTaskHeaders as $headers) 
-                <li class="nav-item pb-2" id="LI_{{ $headers->frontdeskdailyheaderid }}">
-                    <a href="#id{{ $headers->frontdeskdailyheaderid }}"   data-toggle="tab"  class="logBookTab nav-link {{ ($headers->frontdeskdailydate==$today) ? 'active' : ''  }}" style="padding-bottom:0px!important">
-                        {{ $headers->frontdeskdailytitle }}
-                    </a>                 
-                    <span style="font-size:12px;text-align:center;display:block;">
-                        {{ $headers->frontdeskdailydate }}
-                    </span>  
-                </li>
-                <input type="hidden" name="frontdeskdailyheaderid" value="{{ $headers->frontdeskdailyheaderid }}">
-                @endforeach                
+                @php $counter=1 @endphp         
+               	@foreach ($frontdeskHeaders['dates'] as $key=>$headers)                 	
+                <li class="nav-item pb-2">
+                	@php $id = str_replace(':','_',$key) @endphp
+                	@if($counter == 1)
+                		<a href="#id_{{ $frontdeskHeaders['frontdeskHeaders'][0]->frontdeskdailyheaderid}}_{{$counter}}"  data-toggle="tab"  class="nav-link active" style="padding-bottom:0px!important">
+	               	@else
+	               		<a href="#id_{{ $frontdeskHeaders['frontdeskHeaders'][0]->frontdeskdailyheaderid}}_{{$counter}}"  data-toggle="tab"  class="nav-link" style="padding-bottom:0px!important">
+	               	@endif                    
+                        {{ $key }}
+                    </a>                    
+                </li> 
+                @php $counter++ @endphp 
+                @endforeach               
             </ul>
-            <div id="myTabContent" class="tab-content" style="height:200px!important">               
-                @foreach ($frontTaskHeaders as $headers)
-                <div class="tab-pane fade show tabContent {{ $headers->frontdeskdailydate == $today ? 'active in' : '' }} ml-3" id="id{{$headers->frontdeskdailyheaderid }}">                   
-                    <div class="portlet box bg-primary text-white mb-4">                       
+            <div id="myTabContent" class="tab-content" style="height:200px!important">    
+            	@php $counter=1 @endphp
+                    @foreach ($frontdeskHeaders['dates'] as $key=>$headers)
+                    	@php $id = str_replace(':','_',$key) @endphp
+                    	@if($counter == 1) 
+                       <div  class="tab-pane fade show active in"  id="id_{{ $frontdeskHeaders['frontdeskHeaders'][0]->frontdeskdailyheaderid}}_{{$counter}}">
+                        @else
+                       	<div  class="tab-pane fade"  id="id_{{ $frontdeskHeaders['frontdeskHeaders'][0]->frontdeskdailyheaderid}}_{{$counter}}">
+                       	@endif
+                       	 <div class="portlet box bg-primary text-white mb-4">                       
                         <div class="portlet-body bg-white p-2">
                             <div class="table-scrollable">
-                                <table class="table table-hover table_{{$headers->frontdeskdailyheaderid }}" id="table_{{$headers->frontdeskdailyheaderid }}">
+                                <table class="table table-hover table_{{ $frontdeskHeaders['frontdeskHeaders'][0]->frontdeskdailyheaderid}}" id="table_{{ $frontdeskHeaders['frontdeskHeaders'][0]->frontdeskdailyheaderid}}">
                                     <thead>
                                         <tr>
+                                        	<th width="50px" style="line-height:36px;">#</th>
                                         	<th width="50px" style="line-height:36px;"> Edit</th>
                                         	<th width="50px" style="line-height:36px;"> Delete</th>
-                                            <th> Manager Task 
-                                            <a id="LBook_{{$headers->frontdeskdailyheaderid}}" data-toggle="modal" data-target="#yourModal" href="javascript:void(0);" class="btn btn-sm btn-primary mdl_open" style="float:right;"><span class="fa fa-plus" ></span>  Add Task</a>   
+                                            <th> Front Desk Task 
+                                            <a id="LBook_{{ $frontdeskHeaders['frontdeskHeaders'][0]->frontdeskdailyheaderid}}" data-toggle="modal" data-target="#yourModal" href="javascript:void(0);" class="btn btn-sm btn-primary mdl_open" style="float:right;"><span class="fa fa-plus" ></span>  Add Task</a>   
                                             </th>  
                                         </tr>
                                     </thead>
                                     <tbody>                                                                    
-                                        @if(sizeof($headers->frontdeskDetails)>0 )
-                                        @foreach ( $headers->frontdeskDetails as $taskDetail)
-                                        <tr>
+                                        @if(sizeof($frontdeskHeaders['dates'][$key])>0)	                      
+		                     			@foreach ($headers as $details)
+                                        	<tr>
+                                        	<td><input class="form-check-input" id="chk_{{$details->frontdeskdailydetailid}}" type="checkbox" aria-label="Single checkbox Two" style="margin:0;margin-top:9px;"></td>
                                         	<td> @foreach (Session::get('userPermissionDetail') as $userPermissionDetail)
                                                 @if( $userPermissionDetail->edit === 1 )
-                                                <a class="editNotes" href="javascript:void(0);" id="edit_{{$taskDetail->frontdeskdailydetailid}}">
+                                                <a class="editNotes" href="javascript:void(0);" id="edit_{{$details->frontdeskdailydetailid}}">
                                                     <i class="livicon mr-3" data-name="edit" data-size="18" data-c="#418BCA" data-hc="#418BCA"
                                                        data-loop="true"></i>
                                                 </a>
@@ -126,7 +154,7 @@ Accordion Tabs
                                         	<td>
                                                 @foreach (Session::get('userPermissionDetail') as $userPermissionDetail)                                                                                               
                                                 @if( $userPermissionDetail->delete === 1 )
-                                                <a  href="javascript:void(0);" class="deleteNotes" id="delete_{{$taskDetail->frontdeskdailydetailid}}">
+                                                <a  href="javascript:void(0);" class="deleteNotes" id="delete_{{$details->frontdeskdailydetailid}}">
                                                     <i class="livicon" data-name="trash" data-size="18" data-c="#EF6F6C" data-hc="#EF6F6C"
                                                        data-loop="true"></i>
                                                 </a>
@@ -137,8 +165,8 @@ Accordion Tabs
                                                 @endforeach
                                             </td>
                                             <td class="notes" style="position: relative;">
-                                                <input type="text" value="{{ $taskDetail->description }}" readonly="true" class="disableClass"/>
-                                                <a id="{{$taskDetail->frontdeskdailydetailid}}" class="saveNotes" href="javascript:void(0)" style="position: absolute;right: 19px;top: 15px;"><i class="livicon" data-name="save" data-size="24" data-c="#3278B3" data-hc="#5e646b" data-loop="true"></i></a>
+                                                <input type="text" value="{{ $details->description }}" readonly="true" class="disableClass"/>
+                                                <a id="{{$details->frontdeskdailydetailid}}" class="saveNotes" href="javascript:void(0)" style="position: absolute;right: 19px;top: 15px;"><i class="livicon" data-name="save" data-size="24" data-c="#3278B3" data-hc="#5e646b" data-loop="true"></i></a>
                                             </td>
                                         </tr>
                                         @endforeach 
@@ -152,11 +180,49 @@ Accordion Tabs
                             </div>
                         </div>
                     </div>
-                </div>             
-                @endforeach   
+	                     @if(sizeof($frontdeskHeaders['dates'][$key])>0)
+                    
+                    <div class="ml-3 d-flex" style="font-size:16px;letter-spacing:1px;font-family:roboto;position:absolute;bottom:0;">                    	
+		                 <div class="form-check abc-checkbox abc-checkbox-primary mr-4">
+	                        <input class="form-check-input _selectAll" id="check_{{ $frontdeskHeaders['frontdeskHeaders'][0]->frontdeskdailyheaderid}}_{{$counter}}" type="checkbox" aria-label="Single checkbox Two">
+	                        <label class="form-check-label" for="check_{{ $frontdeskHeaders['frontdeskHeaders'][0]->frontdeskdailyheaderid}}">Select All</label>
+	                    </div>	  
+		                <div class="mr-4">
+		                    <a data-toggle="modal" data-target="#copyModal" href="javascript:void(0);" id="copy_{{ $frontdeskHeaders['frontdeskHeaders'][0]->frontdeskdailyheaderid}}"  class="btn btn-success rounded py-1 px-4 mdl_copy_open">Copy</a>
+		                </div>
+		            </div>
+		            @endif                     
+	                </div> 
+	                @php $counter++ @endphp		
+	                @endforeach  
             </div>  
         </div>        
     </div> 
+</div>
+<div class="modal fade" id="copyModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="position: absolute;right: 20px;"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel" style="width:100%;text-align:center;font-weight: bold;color: #EF6F6C;"></h4>
+      </div>
+      <div class="modal-body">
+      		<div class="col-12">
+      			<h2>Task Selected</h2>
+      		<ul class="tsks" style="padding:0;margin:0;">      			
+      		</ul>
+      		</div>
+      		<br/>
+      		<div class="col-12">
+      			 <input id="multiple-date-select" placeholder="Select For Which Dates" class="form-control dtpic datepicker" data-date-format="YYYY-MM-DD" />
+      		</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary _saveTasks">Save Tasks</button>
+      </div>
+    </div>
+  </div>
 </div>
 <div class="modal fade" id="yourModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
@@ -181,7 +247,16 @@ Accordion Tabs
 {{-- page level scripts --}}
 @section('footer_scripts')
 <script src="{{ asset('js/pages/tabs_accordions.js') }}" type="text/javascript"></script>
+<script type="text/javascript" src="{{ asset('js/pages/jquery-ui.min.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/pages/jquery-ui.multidatespicker.js') }}"></script>
 <script>
+	$(document).ready(function(){
+		var d = new Date();
+		d.setDate(d.getDate() + (1 + 7 - d.getDay()) % 7)
+		$('#multiple-date-select').multiDatesPicker({
+			minDate : d
+		});
+	});
 	var APP_URL = {!! json_encode(url('/')) !!}
 	var _logbookId = 0;
     $(".logBookTab").click(function(){
