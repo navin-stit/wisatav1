@@ -107,6 +107,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin', 'as' => 'admin.'], f
     Route::post('updateFrontTask', 'Admin\AdminViewController@updateFrontTask');
     Route::post('saveFronTask', 'Admin\AdminViewController@saveFronTask');
     Route::post('deleteFrontTask', 'Admin\AdminViewController@deleteFrontTask');
+    Route::post('updateFrontFutureTask', 'Admin\AdminViewController@updateFrontFutureTask');
     
     
     Route::post('addLogbokToDb', 'Admin\AdminViewController@addNewLogBook')->name('addLogbokToDb');   

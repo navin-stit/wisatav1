@@ -286,6 +286,48 @@ class AdminViewController extends Controller {
 		}	
 		return view('admin/adminView/front-desk/viewFrontDeskDailyTask', ['frontdeskHeaders' => $response]);        
     }
+    public function updateFrontFutureTask(Request $request)
+    {
+		if ($request->isMethod('post')) {          
+            $posts = $request->post();           
+            $id = $request->user()->id;
+            $response = array();
+            if(sizeof($posts['tasks'])>0)
+            {
+            	$dates = explode(",",$posts['fDates']);  
+            	foreach($dates as $fdate)
+				{
+					$unixTimestamp = strtotime($fdate);
+					$dayOfWeek = date("l", $unixTimestamp);
+					
+					 $d = date('Y-m-d',$unixTimestamp);
+					$frontdeskHeaders = DB::table('front_desk_daily_headers')->select('*')->where('frontdeskdailydate',$d)->get();					
+					if(sizeof($frontdeskHeaders)<=0)
+					{
+						$is_insert_id = DB::insert('insert into front_desk_daily_headers (frontdeskdailydate,frontdeskdailytitle,created_at,updated_at,createdbyid) values(?,?,?,?,?)',[date('Y-m-d',$unixTimestamp),$dayOfWeek,date('Y-m-d h:i:s'),date('Y-m-d h:i:s'),$id]);
+						$IDD = DB::getPdo()->lastInsertId();
+					}
+					else
+					{
+						$IDD = $frontdeskHeaders[0]->frontdeskdailyheaderid;
+					}
+					
+					foreach($posts['tasks'] as $task)
+					{
+						$existingTask = DB::select("Select * from front_desk_daily_details where frontdeskdailydetailid=".$task);			
+						$timingslot = explode('-',$posts['timingslot']);		
+						$is_insert = DB::insert('insert into front_desk_daily_details (frontdeskdailyheaderid,description,ispriority,iscompleted,completedon,completedbyid,startdatetime,enddatetime,created_at,updated_at,createdbyid) values(?,?,?,?,?,?,?,?,?,?,?)',[$IDD,$existingTask[0]->description,0,0,'0000-00-00 00:00:00',0,date('Y-m-d '.$timingslot[0]),date('Y-m-d '.$timingslot[1]),date('Y-m-d h:i:s'),date('Y-m-d h:i:s'),$id]);
+						if($is_insert >0)
+						{
+							$response['status'] = TRUE;
+						}
+						
+					}
+				}
+			}
+			echo json_encode($response);
+        }
+	}
 	public function deleteFrontTask(Request $request)
     {
 		if ($request->isMethod('post')) {          
@@ -304,7 +346,8 @@ class AdminViewController extends Controller {
 		if ($request->isMethod('post')) {          
             $posts = $request->post();
             $id = $request->user()->id;
-            $is_insert = DB::insert('insert into front_desk_daily_details (frontdeskdailyheaderid,description,ispriority,iscompleted,completedon,completedbyid,startdatetime,enddatetime,created_at,updated_at,createdbyid) values(?,?,?,?,?,?,?,?,?,?,?)',[$posts['item'],$posts['anotherValue'],0,0,'0000-00-00 00:00:00',0,date('Y-m-d h:i:s'),date('Y-m-d h:i:s'),date('Y-m-d h:i:s'),date('Y-m-d h:i:s'),$id]);
+            $timeing = explode('-',$posts['timing']);
+            $is_insert = DB::insert('insert into front_desk_daily_details (frontdeskdailyheaderid,description,ispriority,iscompleted,completedon,completedbyid,startdatetime,enddatetime,created_at,updated_at,createdbyid) values(?,?,?,?,?,?,?,?,?,?,?)',[$posts['item'],$posts['anotherValue'],0,0,'0000-00-00 00:00:00',0,date('Y-m-d '.$timeing[0]),date('Y-m-d '.$timeing[1]),date('Y-m-d h:i:s'),date('Y-m-d h:i:s'),$id]);
             if($is_insert > 0)
             {
             	$response['status'] = TRUE;

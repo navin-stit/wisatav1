@@ -126,7 +126,7 @@ Accordion Tabs
                                 <table class="table table-hover table_{{ $frontdeskHeaders['frontdeskHeaders'][0]->frontdeskdailyheaderid}}" id="table_{{ $frontdeskHeaders['frontdeskHeaders'][0]->frontdeskdailyheaderid}}">
                                     <thead>
                                         <tr>
-                                        	<th width="50px" style="line-height:36px;">#</th>
+                                            <th width="50px" style="line-height:36px;">#</th>
                                         	<th width="50px" style="line-height:36px;"> Edit</th>
                                         	<th width="50px" style="line-height:36px;"> Delete</th>
                                             <th> Front Desk Task 
@@ -166,7 +166,9 @@ Accordion Tabs
                                             </td>
                                             <td class="notes" style="position: relative;">
                                                 <input type="text" value="{{ $details->description }}" readonly="true" class="disableClass"/>
-                                                <a id="{{$details->frontdeskdailydetailid}}" class="saveNotes" href="javascript:void(0)" style="position: absolute;right: 19px;top: 15px;"><i class="livicon" data-name="save" data-size="24" data-c="#3278B3" data-hc="#5e646b" data-loop="true"></i></a>
+                                                <a id="{{$details->frontdeskdailydetailid}}" class="saveNotes" href="javascript:void(0)" style="position: absolute;right: 19px;top: 15px;">
+                                                    <i class="livicon" data-name="save" data-size="24" data-c="#3278B3" data-hc="#5e646b" data-loop="true"></i>
+                                                </a>
                                             </td>
                                         </tr>
                                         @endforeach 
@@ -188,7 +190,7 @@ Accordion Tabs
 	                        <label class="form-check-label" for="check_{{ $frontdeskHeaders['frontdeskHeaders'][0]->frontdeskdailyheaderid}}">Select All</label>
 	                    </div>	  
 		                <div class="mr-4">
-		                    <a data-toggle="modal" data-target="#copyModal" href="javascript:void(0);" id="copy_{{ $frontdeskHeaders['frontdeskHeaders'][0]->frontdeskdailyheaderid}}"  class="btn btn-success rounded py-1 px-4 mdl_copy_open">Copy</a>
+		                    <a data-toggle="modal" data-target="#copyModal" href="javascript:void(0);" id="copy_{{ $frontdeskHeaders['frontdeskHeaders'][0]->frontdeskdailyheaderid}}_{{$counter}}"  class="btn btn-success rounded py-1 px-4 mdl_copy_open">Copy</a>
 		                </div>
 		            </div>
 		            @endif                     
@@ -250,12 +252,57 @@ Accordion Tabs
 <script type="text/javascript" src="{{ asset('js/pages/jquery-ui.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/pages/jquery-ui.multidatespicker.js') }}"></script>
 <script>
-	$(document).ready(function(){
-		var d = new Date();
-		d.setDate(d.getDate() + (1 + 7 - d.getDay()) % 7)
+	$(document).ready(function(){		
 		$('#multiple-date-select').multiDatesPicker({
-			minDate : d
+			minDate : +1
 		});
+	});
+	$(document).on('click','._saveTasks',function(){
+		var id = _logbookId;
+		var TaskIds = [];		
+		$('#table_' + id + ' tbody tr td input[type=checkbox]').each(function(){
+			if($(this).is(':checked') == true)
+			{
+				var tsk = $(this).parent().parent().find('.notes').find('input').val();				
+				var idd = $(this).attr('id').split('_');				
+				TaskIds.push(idd[1]);				
+			}
+		});
+		var dates = $('#multiple-date-select').val();
+		var timing = $(this).parent().parent().find('.modal-header h4').find('span').text().trim();
+		var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');		
+		 $.ajax({
+            url: APP_URL + '/admin/updateFrontFutureTask',
+            type: 'POST',
+            dataType: 'json',
+            data: {_token: CSRF_TOKEN,item: id, tasks: TaskIds, fDates:dates, timingslot:timing},
+            success:function(data){
+               if(data.status == true){                  
+				  alert("Copied Successfully!");
+				  $('#multiple-date-select').val("");
+				  $('#copyModal').modal('hide');
+               }
+            }
+    	});
+	});
+	$('.mdl_copy_open').click(function(){
+		var TaskIds = [];
+		$('#copyModal .modal-body .tsks li').remove();
+		var ids = $(this).attr('id').split('_');
+		var _title = $('.taskTabs li#LI_' + ids[1] + '_' + ids[2] + ' a').html();
+		var _date = $('.taskTabs li#LI_' + ids[1] + '_' + ids[2] + ' span').text();
+		$('#copyModal .modal-header .modal-title').html("Copy From <span class='timing_slot'>" + _title + "</span>");
+		$('#multiple-date-select').val("");
+		$('#table_' + ids[1] + ' tbody tr td input[type=checkbox]').each(function(){
+			if($(this).is(':checked') == true)
+			{
+				var tsk = $(this).parent().parent().find('.notes').find('input').val();				
+				var idd = $(this).attr('id').split('_');				
+				TaskIds.push(idd[1]);
+				$('#copyModal .modal-body .tsks').append('<li class="tsknts">' + tsk + '</li>');
+			}
+		});
+		_logbookId = ids[1];
 	});
 	var APP_URL = {!! json_encode(url('/')) !!}
 	var _logbookId = 0;
@@ -272,20 +319,22 @@ Accordion Tabs
 	$('.mdl_open').click(function(){
 		var ids = $(this).attr('id').split('_');		
 		var _title = $('.taskTabs li#LI_' + ids[1] + '_' + ids[2] + ' a').html();
-		$('#yourModal .modal-header .modal-title').html("Task for " + _title );
+		$('#yourModal .modal-header .modal-title').html("Task for <span class='tiemslot'>" + _title + "</span>" );
 		$('#notes_value').val("");
 		_logbookId = ids[1];
 	});
 	// Save New Notes
-	$('._saveNotes').click(function(){
+	$('._saveNotes').click(function(){  
+        var timing = $(this).parent().parent().find('.modal-header h4').find('span').text().trim();
+                //alert(timing);
 		var id = _logbookId;
-		var Value = $('#notes_value').val();
+		var Value = $('#notes_value').val();               
 		var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');		
 		 $.ajax({
             url: APP_URL + '/admin/saveFronTask',
             type: 'POST',
             dataType: 'json',
-            data: {_token: CSRF_TOKEN,item: id, anotherValue: Value},
+            data: {_token: CSRF_TOKEN,item: id, anotherValue: Value, timing: timing},
             success:function(data){
                if(data.status == true){
                	  $('#notes_value').val("");
@@ -293,6 +342,7 @@ Accordion Tabs
                	  var row = "<tr>";
                	  if(data.can_edit == true)
                	  {
+               	  	row += "<td><input class='form-check-input' id='chk_"+data.id+"' type='checkbox' aria-label='Single checkbox Two' style='margin:0;margin-top:9px;'></td>";
 				  	row += "<td><a class='editNotes' href='javascript:void(0);' id='edit_"+ data.id +"'>";
 				  	row += "<i class='livicon mr-3' data-name='edit' data-size='18' data-c='#418BCA' data-hc='#418BCA' data-loop='true'></i>";
 					row += "</a></td>";	
@@ -318,7 +368,7 @@ Accordion Tabs
 				  }	
                	  row += "<td class='notes' style='position: relative;'>";
 				  row += "<input type='text' value='"+ Value +"' readonly='true' class='disableClass'/>";
-				  row += "<a id='"+ data.id +"' class='saveNotes' href='javascript:void(0)' style='position: absolute;right: 19px;top: 15px;'>";
+				  row += "<a id='"+ data.id +"' class='saveNotes' href='javascript:void(0)' style='position: absolute;right:19px;top: 15px;'>";
 				  row += "<i class='livicon' data-name='save' data-size='24' data-c='#3278B3' data-hc='#5e646b' data-loop='true'></i></a></td>";
                	  row += "</tr>";
                	  var s = $('.table_'+ id +' tbody tr:eq(0) td').length;               	
@@ -334,7 +384,7 @@ Accordion Tabs
     	});
 	});
 	// Update Notes
-	$(document).on('click','.saveNotes',function(){
+	$(document).on('click','.saveNotes',function(){               
 		var id = $(this).attr('id');
 		var OBJ = $(this);
 		var Value = $(this).parent().find('input').val();
@@ -377,6 +427,23 @@ Accordion Tabs
                }
             }
     	});
+	});
+        // Select All
+        var APP_URL = {!! json_encode(url('/')) !!}
+	$(document).on('change','._selectAll',function(){
+		var tId = $(this).attr('id').split('_');
+		if($(this).is(':checked') == true)
+		{
+			$('#table_' +tId[1] + ' tbody tr td input[type=checkbox]').each(function(){
+				$(this).prop('checked',true);
+			});
+		}
+		else if($(this).is(':checked') == false)
+		{
+			$('#table_' +tId[1] + ' tbody tr td input[type=checkbox]').each(function(){
+				$(this).prop('checked',false);
+			});
+		}		
 	});
 </script>
 @stop
